@@ -1,0 +1,10 @@
+*.docx
+*.pptx
+*.jpg
+*.png
+.Rhistory
+.Rproj.user/
+documents/
+input/
+output/
+raw_data/

@@ -1,0 +1,1 @@
+This project introduces using remote sensing, including LiDAR, to quantify deadwood structures (lying and standing) in the UI Experimental Forest and assessing how deadwood structures influence wildlife. The study area for this project will be Pinestia and possibly Big Meadows.
