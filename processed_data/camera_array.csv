@@ -1,0 +1,16 @@
+array_name,state,years_surveyed,ecoregion,array_lat,array_long
+Galena,ID,1,Temperate Steppe,43.86,-114.65
+Hailey,ID,1,Temperate Steppe,43.56,-114.47
+SunValley,ID,1,Temperate Steppe,43.70,-114.22
+OregonStateUni,OR,5,Marine,44.42,-123.46
+Forrester,OR,2,Temperate Desert,45.29,-118.56
+SUCP,WA,4,Marine,47.68,-122.24
+CowCreek,OR,1,Mediterranean,43.06,-122.97
+Elwha,WA,2,Marine,48.10,-123.64
+OlympicPeninsula,WA,3,Marine,47.87,-122.94
+KamiakButte,WA,1,Temperate Steppe,46.87,-117.16
+SmootHill,WA,1,Temperate Steppe,46.83,-117.22
+Vashon,WA,1,Marine,47.41,-122.47
+Rachlow,ID,2,Temperate Steppe,46.80,-116.81
+Johnson,OR,2,Marine,47.65,-122.17
+McMinnville,OR,1,Marine,45.22,-123.25
