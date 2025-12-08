@@ -1,4 +1,4 @@
-deployment_id,site_id,project_id,start_date,end_date,survey_nights,dep_lat,dep_long,habitat,feature_type
+deployment_id,site_id,project_id,start_date,end_date,survey_nights,latitude,longitude,habitat,feature_type
 OR_Forest_Forrester_21_dep_01,OR_Forest_Forrester_21_loc_01dup,Snapshot USA 2021,9/1/2021,11/24/2021,84,45.30501,-118.60709,Forest,Trail game
 OR_Forest_Forrester_21_dep_02,OR_Forest_Forrester_21_loc_02,Snapshot USA 2021,9/1/2021,11/24/2021,84,45.30404,-118.59492,Forest,Trail game
 OR_Forest_Forrester_21_dep_03,OR_Forest_Forrester_21_loc_03,Snapshot USA 2021,9/1/2021,11/5/2021,65,45.30509,-118.58216,Forest,Trail game
