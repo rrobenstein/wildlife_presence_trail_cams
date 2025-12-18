@@ -1,7 +1,7 @@
 library(RSQLite)
 library(DBI)
 
-# create db for deadwood-wildlife and connect ####
+# create db for wildlife presence using trail cams and connect ####
 
 wlf_cam_db <- dbConnect(drv = SQLite(),
                        "database/wlf_cam.db")
@@ -78,6 +78,7 @@ dbExecute(conn = wlf_cam_db,
           deployment_id varchar(60),
           start_time text,
           end_time text,
+          n_individuals numeric (2),
           FOREIGN KEY (deployment_id) REFERENCES deployment(deployment_id)
           );")
 

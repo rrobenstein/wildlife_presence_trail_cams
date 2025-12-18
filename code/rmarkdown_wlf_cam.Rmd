@@ -1,0 +1,981 @@
+---
+title: "Wildlife Presence Using Trail Cameras"
+author: "Riley Robenstein"
+date: "2025-12-08"
+output: 
+  html_document:
+    css: open_sans.css
+    number_sections: true
+    fig_caption: true
+editor_options: 
+  chunk_output_type: console
+bibliography: references.bib
+csl: the-journal-of-wildlife-management.csl
+---
+
+```{r opts, echo = FALSE, eval = TRUE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
+```
+
+# Remote sensing and wildlife
+
+Use of remote sensing in wildlife research has become increasingly
+prevalent, particularly with trail cameras. Trail cameras can provide
+information about wildlife presence and absence when human observations
+are unavailable or may disturb wildlife activity and presence. Continued
+collection of data with trail cameras can provide spatial and temporal
+trends of larger wildlife. The SNAPSHOT USA project contains several
+years of camera trap data across the US available for public use
+[@rooney2025b]. Data were collected using un-baited cameras and
+identified through [Wildlife
+Insights](https://app.wildlifeinsights.org/initiatives/2000156/Snapshot-USA).
+The objective of this project is to become familiar with trail camera
+data to assess wildlife presence and activity. This will ultimately help
+in future data collection using trail cameras and acoustic recording
+units deployed and point count surveys conducted in the University of
+Idaho Experimental Forest to assess how deadwood structures may
+influence wildlife presence and activity. This file assists in building
+a database and cleaning and visualizing trail camera data.
+
+## SNAPSHOT USA
+
+SNAPSHOT USA is a national project where camera trap surveys are
+conducted across all 50 US states annually from September-October to
+estimate wildlife abundance and distributions [@rooney2025a]. This
+project primarily focuses on mammalian species, with large birds also
+included. SNAPSHOT USA's protocol provides a solid base for community
+science, and various organizations across the country collaborate to
+produce these spatial and temporal wildlife data. Some contributors have
+provided data outside the standard collection period, so the 2019-2023
+data span from August 1-December 29 [@rooney2025a]. Each collaborator is
+required to deploy a camera array made up of a minimum of eight
+un-baited cameras. The SNAPSHOT USA protocol requires at least 400
+camera trap-nights between September and October per year for each
+camera array [@rooney2025a].
+
+## Study area
+
+My focal area included a total of 15 trail camera sites in Idaho,
+Washington, and Oregon (Figure 1).
+
+![Figure 1. Camera array locations and Bailey's ecoregions of the US
+from 2019-2023. Darker points represent locations that fall within
+Idaho, Washington and Oregon and size correlates to the number of years
+surveyed. Colored polygons represent different
+ecoregions.](../documents/study_area.jpg)
+
+## Data description
+
+I subsetted these data to only include cameras deployed in Idaho,
+Washington and Oregon. Data consisted of camera arrays, camera
+locations, general habitat characteristics, deployment periods, image
+sequences, and taxonomic information across various levels for species
+identification [@rooney2025b]. Further information regarding camera
+array locations and ecoregions were added for camera arrays
+[@rooney2024].
+
+## References
+
+::: {#refs}
+:::
+
+# Database creation and population
+
+Trail camera data were distributed across six `.csv` files in the
+**processed_data** folder to optimize storage and data manipulation. I
+created a relational database with R and SQL to easily navigate these
+data (Figure 2). Note that the header of each box corresponds to the name of each table. The database can be reproduced with the code in sections **2.1-2.8**.
+
+![Figure 2. Entity relationship diagram of relational database
+structure.](../documents/db_structure_ssusa.jpg)
+
+## Load packages and create and connect to database
+
+Load the packages `DBI` and `RSQLite` required to connect R and SQLite.
+Use `install.packages()` if the packages are not installed.
+
+```{r pkgs, message = FALSE}
+library(DBI)
+library(RSQLite)
+```
+
+Connect to the database file. A database file will be created if the
+code has not previously been executed.
+
+```{r db}
+wlf_cam_db <- dbConnect(drv = RSQLite::SQLite(),
+                       "../database/wlf_cam.db")
+```
+
+## **PROJECT_NAME** table {#project}
+
+The **project_name** table includes the following variables: project_id
+(**primary key**), project_name, and year, where project_id is a unique
+identifier for each unique project by year, project name is the
+respective project name, and year is the year data were captured.
+
+### Create **project_name** table
+
+Create the table in SQLite.
+
+```{r project_name_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE project_name (
+          project_id varchar(10) PRIMARY KEY NOT NULL UNIQUE,
+          project_name varchar(35),
+          year numeric(4) CHECK (year IN 
+                                          ('2019',
+                                          '2020',
+                                          '2021',
+                                          '2022',
+                                          '2023'))
+          );")
+```
+
+### Populate **project_name** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_project_names, eval = FALSE}
+# Read in project_name.csv file
+project_name_csv <- read.csv("../processed_data/project_name.csv")
+
+# Get .csv column names
+colnames(project_name_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "project_name")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "project_name",
+             value = project_name_csv,
+             append = TRUE)
+```
+
+## **CAMERA_ARRAY** table {#array}
+
+The **camera_array** table includes the following variables: array_name
+(**primary key**), state, years_surveyed, ecoregion, array_lat, and
+array_long, where array_name is a unique identifier for each camera trap
+array, state is the US state where the array was located, years_surveyed
+is the number of years an array has image sequence data from, ecoregion
+is based on Bailey's ecoregions (Bailey 2016 as cited in Rooney et al.
+2025) and array_lat and array_long are the approximate latitude and
+longitude coordinates (decimal degrees WGS 84) for the respective array
+array.
+
+### Create **camera_array** table
+
+Create the table in SQLite.
+
+```{r camera_array_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE camera_array (
+          array_name varchar(20) PRIMARY KEY NOT NULL UNIQUE,
+          state varchar(2),
+          years_surveyed numeric(1),
+          ecoregion varchar(20),
+          array_lat numeric(10, 10),
+          array_long numeric(10, 10)
+          );")
+```
+
+### Populate **camera_array** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_camera_array, eval = FALSE}
+# Read in camera_array.csv file
+camera_array_csv <- read.csv("../processed_data/camera_array.csv")
+
+# Get .csv column names
+colnames(camera_array_csv)
+# Get database field names
+dbListFields(wlf_cam_db, "camera_array")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "camera_array",
+             value = camera_array_csv,
+             append = TRUE)
+```
+
+## **SITE_NAME** table {#site}
+
+The **site_name** table includes the following variables: site_id
+(**primary key**), array_name (*foreign key*), and development_level,
+where site_id is a unique identifier for each site, array_name
+corresponds to the array_name in [camera_array](#array), and
+development_level is classified as wild, rural, suburban, or urban.
+
+### Create **site_name** table
+
+Create the table in SQLite.
+
+```{r site_name_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE site_name (
+          site_id varchar(50) PRIMARY KEY NOT NULL UNIQUE,
+          array_name  varchar(50),
+          development_level varchar(10) CHECK (development_level IN 
+                                                                ('Wild',
+                                                                'Rural',
+                                                                'Urban',
+                                                                'Suburban')),
+          FOREIGN KEY (array_name) REFERENCES camera_array(array_name)
+          );")
+```
+
+### Populate **site_name** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_site_name, eval = FALSE}
+# Read in site_name.csv file
+site_name_csv <- read.csv("../processed_data/site_name.csv")
+
+# Get .csv column names
+colnames(site_name_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "site_name")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "site_name",
+             value = site_name_csv,
+             append = TRUE)
+```
+
+## **DEPLOYMENT** table {#deployment}
+
+The **deployment** table includes the following variables: deployment_id
+(**primary key**), site_id (*foreign key*), project_id (*foreign key*).
+start_date, end_date, survey_nights, latitude, longitude, habitat, and
+feature type, where deployment_id is a unique identifier for each camera
+deployment, site_id corresponds to the site_id in [site_name](#site),
+project_id corresponds to the project_id in [project_name](#project),
+start_date is the date (*YYYY-MM-DD*) when the camera was deployed,
+end_date is the date (*YYYY-MM-DD*) when the camera was retrieved,
+survey_nights is number of nights the camera was at the site, latitude
+and longitude are geographic coordinates (decimal degrees WGS 84)
+between 21.3558 to 59.4526 and -157.7496 to -68.6116, respectively,
+habitat is classified as forest, grassland, or anthropogenic, and
+feature type indicates potential features at the camera's deployment
+site.
+
+### Create **deployment** table
+
+Create the table in SQLite.
+
+```{r deployment_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE deployment (
+          deployment_id varchar(60) PRIMARY KEY NOT NULL UNIQUE,
+          site_id varchar(50),
+          project_id varchar(10),
+          start_date text,
+          end_date text,
+          survey_nights numeric (3),
+          latitude numeric(10, 10),
+          longitude numeric(10, 10),
+          habitat varchar(15),
+          feature_type varchar(15),
+          FOREIGN KEY (site_id) REFERENCES site_name(site_id)
+          FOREIGN KEY (project_id) REFERENCES project_name(project_id)
+          );")
+```
+
+### Populate **deployment** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r col_names_deployment, eval = FALSE}
+# Read in deployment.csv file
+deployment_csv <- read.csv("../processed_data/deployment.csv")
+
+# Get .csv column names
+colnames(deployment_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "deployment")
+```
+
+Before populating the table, note the discrepancy in names of variables.
+
+```{r show_names_deployment, echo = FALSE}
+wlf_cam_db <- dbConnect(drv = SQLite(),
+                       "../database/wlf_cam.db")
+deployment_csv <- read.csv("../processed_data/deployment.csv")
+
+# Get .csv column names
+colnames(deployment_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "deployment")
+```
+
+Edit the `.csv` column names to fit those of the database first.
+
+```{r edit_variables_deployment}
+# Edit .csv column names
+colnames(deployment_csv) <- c("deployment_id", "site_id",
+                              "project_id", "latitude",
+                              "longitude", "start_date",
+                              "end_date", "survey_nights",
+                              "habitat", "feature_type")
+
+# Check .csv column names again
+colnames(deployment_csv)
+```
+
+Now that the column names match, populate the deployment table.
+
+```{r populate_deployment, eval = FALSE}
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "deployment",
+             value = deployment_csv,
+             append = TRUE)
+```
+
+## **SEQUENCE** table {#sequence}
+
+The **sequence** table includes the following variables: sequence_id
+(**primary key**), deployment_id (*foreign key*), start_time, and
+end_time, where sequence_id is a unique identifier for each photo
+sequence captured within one minute of a camera trigger, deployment_id
+corresponds to the deployment_id in [deployment](#deployment),
+start_time is the beginning of the one-minute photo sequence, and
+end_time is the end of the one-minute photo sequence.
+
+### Create **sequence** table
+
+Create the table in SQLite.
+
+```{r sequence_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE sequence (
+          sequence_id varchar(15) PRIMARY KEY NOT NULL UNIQUE,
+          deployment_id varchar(60),
+          start_time text,
+          end_time text,
+          FOREIGN KEY (deployment_id) REFERENCES deployment(deployment_id)
+          );")
+```
+
+### Populate **sequence** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_sequence, eval = FALSE}
+# Read in sequence.csv file
+sequence_csv <- read.csv("../processed_data/sequence.csv")
+
+# Get .csv column names
+colnames(sequence_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "sequence")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "sequence",
+             value = sequence_csv,
+             append = TRUE)
+```
+
+## **DETECTION** table
+
+The **detection** table includes the following variables: detection_id
+(**primary key**), sequence_id (*foreign key*), class, order, family,
+genus, species, common_name, age, sex, and group_number, where
+detection_id is a unique identifier for each wildlife detection,
+sequence_id corresponds to the sequence_id in [sequence](#sequence),
+class is the taxonomic class identified for the wildlife detection,
+order is the taxonomic order identified for the wildlife detection,
+family is the taxonomic family identified for the wildlife detection,
+genus is the taxonomic genus identified for the wildlife detection,
+species is the taxonomic species identified for the wildlife detection,
+common_name is the common name identified for the wildlife detection,
+age is classified as juvenile or adult, sex is classified as male or
+female, and group_number is the number of individuals in the image
+sequence with that respective taxonomic identification.
+
+### Create **detection** table
+
+Create the table in SQLite.
+
+```{r detection_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE detection (
+          detection_id varchar(15) PRIMARY KEY NOT NULL UNIQUE,
+          sequence_id varchar(15),
+          class varchar(15),
+          'order' varchar(20),
+          family varchar(20),
+          genus varchar (15),
+          species varchar(15),
+          common_name varchar(30),
+          age varchar(10),
+          sex varchar(10),
+          group_number numeric(2),
+          FOREIGN KEY (sequence_id) REFERENCES sequence(sequence_id)
+          );")
+```
+
+### Clean **detection** table
+
+The detection `.csv` file has missing values and formatting is
+inconsistent. To ensure they are compatible with `SQLite` and `R`, load
+the `.csv` file and convert all missing values to 'NA'. Make formatting
+consistent for the variables *age* and *sex*.
+
+```{r convert_null_detection, eval = FALSE}
+# Read in detection.csv file
+detection_csv <- read.csv("../processed_data/detection.csv")
+
+# Convert ' ' or 'Unknown' values to blank ('')
+detection_csv[detection_csv == " " | detection_csv == "Unknown" | detection_csv == "unknown"] <- NA
+
+# Make formatting consistent
+detection_csv$age[detection_csv$age == "adult"] <- "Adult"
+detection_csv$age[detection_csv$age == "juvenile"] <- "Juvenile"
+
+detection_csv$sex[detection_csv$sex == "male"] <- "Male"
+detection_csv$sex[detection_csv$sex == "female"] <- "Female"
+```
+
+### Populate **detection** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_detection, eval = FALSE}
+# Get .csv column names
+colnames(detection_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "detection")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "detection",
+             value = detection_csv,
+             append = TRUE)
+```
+
+## Check database
+
+Run the following code to ensure the data were loaded into the tables
+properly.
+
+```{r db_table_names}
+# List table names
+
+dbListTables(wlf_cam_db)
+```
+
+```{r project_name_table_check}
+# project_name table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM project_name
+                        LIMIT 5;")
+```
+
+```{r camera_array_table_check}
+# camera_array table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM camera_array
+                        LIMIT 5;")
+```
+
+```{r site_name table check}
+# site_name table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM site_name
+                        LIMIT 5;")
+```
+
+```{r deployment_table_check}
+# deployment table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM deployment
+                        LIMIT 5;")
+```
+
+```{r sequence_table_check}
+# sequence table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM sequence
+                        LIMIT 5;")
+```
+
+```{r detection_table_check}
+# detection table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM detection
+                        LIMIT 5;")
+```
+
+# Data exploration
+
+Now that the database is created and loaded, we can explore and
+familiarize ourselves with trail camera data.
+
+## Load package and tables
+
+Load the `tidyverse` package to help with data exploration. Load the
+tables from the database and assign them each to an object.
+
+```{r tidyverse_tables, message = FALSE}
+library(tidyverse)
+
+project <- dbGetQuery(wlf_cam_db, "SELECT * FROM project_name;")
+array <- dbGetQuery(wlf_cam_db, "SELECT * FROM camera_array;")
+site <- dbGetQuery(wlf_cam_db, "SELECT * FROM site_name;")
+deployment <- dbGetQuery(wlf_cam_db, "SELECT * FROM deployment;")
+sequence <- dbGetQuery(wlf_cam_db, "SELECT * FROM sequence;")
+detection <- dbGetQuery(wlf_cam_db, "SELECT * FROM detection;")
+```
+
+## Exploratory summaries
+
+Before diving into wildlife presence/absence and population trends,
+explore the following summary information about the trail cameras below.
+
+### Deployments per year
+
+We want to know how many cameras were deployed each year.
+
+```{r deploy_per_yr, message = FALSE}
+n_cam <- deployment %>% 
+  mutate(year = year(mdy(start_date))) %>% # acquire year from deployment date
+  group_by(year) %>% # group deployments by year
+  tally # calculate number of cameras deployed per year
+
+n_cam
+```
+
+### Arrays with > 8 cameras
+
+We want to know how many camera arrays had more than eight cameras
+deployed per survey period.
+
+Note that there is no foreign key directly connecting the array and
+deployment tables. We will need the site table to connect these these
+two tables.
+
+```{r array_eight_cam, message = FALSE}
+n_array <- array %>% 
+  left_join(site, by = "array_name") %>% # join site table to array using array_name
+  left_join(deployment, by = "site_id") %>% # join deployment table to array using site_id
+  mutate(year = year(mdy(start_date)), # acquire year from deployment date
+         array_year = paste0(array_name, "_", year)) %>% # create new variable with array name and year
+  group_by(array_year) %>% 
+  tally %>%  # calculate number of cameras per array per year
+  filter(n > 8) %>% # include arrays with more than 8 cameras
+  tally # calculate number of arrays with > 8 cameras deployed in a survey period
+
+n_array
+```
+
+We can see that 25 camera array deployments had more than eight cameras.
+
+### Sites reused
+
+We want to know how many and which sites were reused.
+
+```{r sites_reused, message = FALSE}
+reused <- site %>% 
+  left_join(deployment, by = "site_id") %>% # join deployment table to site using site_id
+  group_by(site_id) %>% # group by site
+  tally %>% # calculate number of times each site is used
+  filter(n > 1) # include sites with more than one deployment
+
+n_reused <- tally(reused) # calculate number of sites reused
+
+reused
+n_reused
+```
+
+We can see that 40 sites were reused between 2019-2023 in Idaho,
+Washington and Oregon.
+
+## Number of species
+
+Now, let's look at the species level.
+
+### By habitat
+
+We want to know how many species were detected in each habitat type.
+Similar to before, we will need to bring in a third
+table---sequence---to relate the detection and deployment tables.
+
+```{r n_species_habitat, message = FALSE}
+# filter out NA values for species
+sp_detect <- detection[!is.na(detection$species), ]
+
+n_sp_habitat <- sp_detect[sp_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  left_join(deployment, by = "deployment_id") %>% # join deployment table to detection using deployment_id
+  mutate(genus_species = paste0(genus, " ", species)) %>% # create new variable with genus and species
+  select(genus_species, habitat) %>%  # select variables genus_species and habitat
+  group_by(habitat) %>% # group by habitat
+  tally
+
+n_sp_habitat
+```
+
+### By feature type
+
+We want to know how many species were detected near each feature type.
+Like the previous query, we will need the sequence table to relate the
+detection and deployment tables.
+
+```{r n_species_feature, message = FALSE}
+# filter out NA values for species
+sp_detect <- detection[!is.na(detection$species), ]
+
+n_sp_feature <- sp_detect[sp_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  left_join(deployment, by = "deployment_id") %>% # join deployment table to detection using deployment_id
+  mutate(genus_species = paste0(genus, " ", species)) %>% # create new variable with genus and species
+  select(genus_species, feature_type) %>%  # select variables genus_species and feature_type
+  group_by(feature_type) %>% # group by feature_type
+  tally
+
+n_sp_feature
+```
+
+### By habitat and feature type
+
+We want to know how many species were detected in each habitat type near
+each feature type.
+
+```{r n_species_habitat_feature, message = FALSE}
+# filter out NA values for species
+sp_detect <- detection[!is.na(detection$species), ]
+
+n_species <- sp_detect[sp_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  left_join(deployment, by = "deployment_id") %>% # join deployment table to detection using deployment_id
+  mutate(genus_species = paste0(genus, " ", species)) %>% # create new variable with genus and species
+  select(genus_species, habitat, feature_type) %>%  # select variables genus_species, habitat, and feature_type
+  group_by(habitat, feature_type) %>% # group by habitat, then feature_type
+  tally
+
+n_species
+```
+
+## Number of detections
+
+Let's look at the individual level for wildlife detections.
+
+### By year
+
+We want to know how many individuals---known and unknown---were detected
+each year.
+
+```{r detect_year, message = FALSE}
+wlf_detect <- detection
+wlf_detect$species[is.na(wlf_detect$species)] <- "unknown" # convert NA values to "unknown"
+
+n_detect_yr <- wlf_detect[wlf_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(year = year(mdy_hm(start_time))) %>% # acquire year from start sequence
+  select(group_number, year) %>%  # select variables group_number and year
+  group_by(year) %>% # group by year
+  summarise(n = sum(group_number))
+
+n_detect_yr
+```
+
+We want to know how many known individuals were detected each year.
+
+```{r known_detect_year, message = FALSE}
+known_detect <- detection[!is.na(detection$species), ] # filter out unknown (NA) detections
+
+n_known_yr <- known_detect[known_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(year = year(mdy_hm(start_time))) %>% # acquire year from start sequence
+  select(group_number, year) %>%  # select variables group_number and year
+  group_by(year) %>% # group by year
+  summarise(n = sum(group_number))
+
+n_known_yr
+```
+
+### By month
+
+We want to know how many individuals---known and unknown---were detected
+each month to assess at a more seasonal level.
+
+```{r detect_month, message = FALSE}
+wlf_detect <- detection
+wlf_detect$species[is.na(wlf_detect$species)] <- "unknown" # convert NA values to "unknown"
+
+n_detect_m <- wlf_detect[wlf_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(month = month(mdy_hm(start_time))) %>% # acquire month from start sequence
+  select(group_number, month) %>%  # select variables group_number and year
+  group_by(month) %>% # group by year
+  summarise(n = sum(group_number))
+
+n_detect_m
+```
+
+We want to know how many known individuals were detected each year.
+
+```{r known_detect_month, message = FALSE}
+known_detect <- detection[!is.na(detection$species), ] # filter out unknown (NA) detections
+
+n_known_m <- known_detect[known_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(month = month(mdy_hm(start_time))) %>% # acquire month from start sequence
+  select(group_number, month) %>%  # select variables group_number and month
+  group_by(month) %>% # group by month
+  summarise(n = sum(group_number))
+
+n_known_m
+```
+
+### By site
+
+We want to know which sites had the highest number of known individuals
+detected. Let's focus on the top five sites. Note that we need to bring
+in the deployment and sequence tables to relate the site and detection
+tables.
+
+```{r detect_site, message = FALSE}
+known_detect <- detection[!is.na(detection$species), ] # filter out unknown (NA) detections
+
+known_detect <- known_detect[known_detect$species != "sapiens", ] # filter out human detections
+
+n_detect_site <- site %>% 
+  left_join(deployment, by = "site_id") %>% # join deployment table to site using site_id
+  left_join(sequence, by = "deployment_id") %>% # join sequence table to site using deployment_id
+  left_join(known_detect, by = "sequence_id") %>%  # join detection table to site using sequence_id
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  select(group_number, site_id) %>%  # select variables group_number and month
+  group_by(site_id) %>% # group by month
+  summarise(n = sum(group_number, na.rm = TRUE)) %>% # calculate number of individuals detected per site
+  arrange(desc(n)) # arrange in descending order of individuals detected
+
+head(n_detect_site, 5) # display the 5 sites with highest number of detections
+```
+
+### By site and month
+
+We want to know which sites had the highest number of known individuals
+detected in September and October. Again, let's focus on the top five
+sites. We need to bring in the deployment table to relate the
+detection-sequence and site tables.
+
+```{r detect_site_month, message = FALSE}
+known_detect <- detection[!is.na(detection$species), ] # filter out unknown (NA) detections
+
+known_detect <- known_detect[known_detect$species != "sapiens", ] # filter out human detections
+
+n_detect <- site %>% 
+  left_join(deployment, by = "site_id") %>% # join deployment table to site table using site_id
+  left_join(sequence, by = "deployment_id") %>% # join sequence table to site using deployment_id
+  left_join(known_detect, by = "sequence_id") %>%  # join detection table to site using sequence_id
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  mutate(month = month(mdy_hm(start_time))) %>% # acquire month from start sequence
+  filter(month %in% c(9, 10)) %>% # only include detections from Sept and Oct
+  select(group_number, month, site_id) %>% # select variables group_number, month, and site_id
+  group_by(site_id, month) %>% # group by site_id, then by month
+  summarise(n = sum(group_number, na.rm = TRUE)) # calculate number of individuals detected per site per month
+
+Sept <- n_detect[n_detect$month == 9, ] %>% 
+  arrange(desc(n)) # arrange in descending order of individuals detected
+Oct <- n_detect[n_detect$month == 10, ] %>% 
+  arrange(desc(n)) # arrange in descending order of individuals detected
+
+head(Sept, 5)
+head(Oct, 5)
+```
+
+# Data visualization
+
+Begin visualizing trends seen in the camera trap data. To use the same color scheme shown, run `devtools::install_github("cdanielcadena/tanagR")` and load the package `tanagR`.
+
+```{r tanagR_pkg, message = FALSE}
+library(tanagR)
+```
+
+## Species in September and October
+
+We want to know the number of individuals in each species detected in September and October. There are many species observed throughout these data, so we will break down the detections as we go.
+
+```{r species_months, message = FALSE}
+# filter out NA values for species
+sp_detect <- detection[!is.na(detection$species), ]
+
+sp_month <- sp_detect[sp_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(genus_species = paste0(genus, " ", species), # create new variable with genus and species
+         month = month(mdy_hm(start_time), label = TRUE, abbr = FALSE)) %>% # acquire month from start sequence
+  filter(month %in% c("September", "October")) %>% # only include detections from Sept and Oct
+  group_by(month, common_name) %>% # group by month, then common_name
+  select(order, family, genus_species, group_number, common_name, month) # select variables genus_species, group_number, and habitat
+```
+
+### Species detected > 100 times
+Let's visualize this for species with more than 100 detections in September or October.
+
+```{r vis_100_detect_months, message = FALSE}
+mult_detect <- sp_month %>% 
+  group_by(month, common_name) %>% 
+  summarize(n_individuals = sum(group_number)) %>% # calculate number of individuals detected per species per month
+  filter(n_individuals > 100) # select species detected > 100 times
+
+ggplot(mult_detect, aes(x = common_name, y = n_individuals, fill = month)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Species detected", y = "Number of individuals", fill = "Month") +
+  scale_fill_tanagr(palette_name = "cyanerpes_cyaneus") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### Carnivora order detections
+
+Focusing on the order Carnivora, we want to visualize the number of individuals in each species detected in September and October.
+
+```{r vis_carnivora_months, message = FALSE}
+carnivora <- sp_month[sp_month$order == "Carnivora", ] %>% # select species in order Carnivora
+  group_by(month, common_name) %>% 
+  summarize(n_individuals = sum(group_number)) # calculate number of individuals detected per species per month
+
+ggplot(carnivora, aes(x = common_name, y = n_individuals, fill = month)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Species detected", y = "Number of individuals", fill = "Month") +
+  scale_fill_tanagr(palette_name = "ramphocelus_sanguinolentus") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+## Detections across orders
+
+Many detections were only identified to the order level. Rather than looking at the species level, we want to visualize the number of individuals in each order detected in September and October.
+
+```{r vis_order_months, message = FALSE}
+wlf_detect <- detection
+wlf_detect$species[is.na(wlf_detect$species)] <- "unknown" # convert NA values to "unknown"
+
+n_order <- wlf_detect[wlf_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(month = month(mdy_hm(start_time), 
+                       label = TRUE, abbr = FALSE)) %>% # acquire month from start sequence
+  filter(month %in% c("September", "October"), # only include detections from Sept and Oct
+         !is.na(order)) %>% # remove NAs
+  group_by(month, order) %>% # group by month, then order 
+  summarise(n_individuals = sum(group_number))  # calculate number of individuals detected per order per month
+
+ggplot(n_order, aes(x = order, y = n_individuals, fill = month)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Order detected", y = "Number of individuals", fill = "Month") +
+  scale_fill_tanagr(palette_name = "tangara_chilensis") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+## Detections over time
+
+We want to visualize wildlife trends over time in a couple of ways. Let's break this down again to help understand the bigger picture.
+
+```{r detect_time, message = FALSE}
+detect_wlf <- detection
+detect_wlf$term[!grepl("Domestic", detect_wlf$common_name)] <- "wildlife"
+detect_wlf$term[detect_wlf$common_name != "sapiens"] <- "wildlife" 
+  # define non-human and non-domestic life as wildlife in new column 'term'
+
+detect_wlf$term[detect_wlf$species == "sapiens"] <- "human-domestic" 
+  # define humans as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Cat"] <- "human-domestic" 
+  # define domestic cats as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Cattle"] <- "human-domestic"
+  # define domestic cattle as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Dog"] <- "human-domestic" 
+  # define domestic dogs as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Horse"] <- "human-domestic" 
+  # define domestic horses as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Sheep"] <- "human-domestic" 
+  # define domestic sheep as human or domestic life
+
+detect_wlf <- detect_wlf[!is.na(detect_wlf$common_name), ] 
+  # remove wildlife undefined in the common_name
+
+sp_time <- detect_wlf %>% 
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  left_join(deployment, by = "deployment_id") %>% # join deployment table to detection using deployment_id
+  mutate(date = mdy(format(mdy_hm(start_time), "%m-%d-%Y")), # acquire date from start sequence
+         year = year(mdy_hm(start_time)), # acquire year from start sequence
+         julian_day = date) # begin building julian day
+
+year(sp_time$julian_day) <- 2000 # set year to be the same for all julian days
+```
+
+### Wildlife detections over time
+
+We want to visualize the number of individuals detected over time and compare across years.
+
+```{r wlf_time, message = FALSE}
+wlf_time <- sp_time[sp_time$term != "human-domestic", ] %>% 
+  group_by(year, julian_day) %>% # group by year, then julian day
+  summarise(n_individuals = sum(group_number)) # calculate number of individuals detected daily per year
+
+ggplot(wlf_time, aes(x = julian_day, 
+                     y = n_individuals, 
+                     color = as.factor(year))) +
+  geom_point() +
+  labs(x = "Time", y = "Number of individuals detected", color = "Year") +
+  scale_color_tanagr(palette_name = "tangara_chilensis") +
+  theme_classic()
+```
+
+### Wildlife and human-domestic detections over time
+
+We want to visualize the number of individuals detected over time, along with the number of humans and domestic animals. We will first look at the year level.
+
+```{r wlf_human_time, message = FALSE}
+wlf_human_time <- sp_time%>% 
+  group_by(date, term) %>% # group by date
+  summarise(n_individuals = sum(group_number)) # calculate number of individuals detected daily across years
+
+ggplot(wlf_human_time, aes(x = date, 
+                     y = n_individuals, 
+                     color = term)) +
+  geom_point() +
+  labs(x = "Time", y = "Number of individuals detected", color = "Detection type") +
+  scale_color_tanagr(palette_name = "tangara_chilensis") +
+  theme_classic()
+```
+
+Now, let's look at a monthly level.
+
+```{r wlf_human_julian, message = FALSE}
+wlf_human_julian <- sp_time%>% 
+  group_by(year, julian_day, term) %>% # group by year, then julian day, then term
+  summarise(n_individuals = sum(group_number)) # calculate number of individuals detected daily per year
+
+ggplot(wlf_human_julian, aes(x = julian_day, 
+                     y = n_individuals, 
+                     color = term)) +
+  geom_point() +
+  labs(x = "Time", y = "Number of individuals detected", color = "Detection type") +
+  scale_color_tanagr(palette_name = "tangara_chilensis") +
+  theme_classic()
+```
+
+Surprisingly, wildlife detections do not appear to decrease as human and domestic animal detections increase.
