@@ -70,7 +70,7 @@ Washington, and Oregon (Figure 1).
 from 2019-2023 [@rooney2024]. Darker points represent locations that fall within
 Idaho, Washington and Oregon and size correlates to the number of years
 surveyed. Colored polygons represent different
-ecoregions.](documents/study_area.jpg)
+ecoregions.](figs/study_area.jpg)
 
 ## Data description
 

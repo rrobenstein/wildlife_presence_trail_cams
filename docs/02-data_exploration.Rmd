@@ -14,7 +14,7 @@ library(RSQLite)
 library(tidyverse)
 
 wlf_cam_db <- dbConnect(drv = RSQLite::SQLite(),
-                       "../../database/wlf_cam.db")
+                       "../database/wlf_cam.db")
 
 project <- dbGetQuery(wlf_cam_db, "SELECT * FROM project_name;")
 array <- dbGetQuery(wlf_cam_db, "SELECT * FROM camera_array;")

@@ -6,7 +6,7 @@ created a relational database with R and SQL to easily navigate these
 data (Figure 2). Note that the header of each box corresponds to the name of each table. The database can be reproduced with the code in sections **2.1-2.8**.
 
 ![Figure 2. Entity relationship diagram of relational database
-structure.](documents/db_structure_ssusa.jpg)
+structure.](figs/db_structure_ssusa.jpg)
 
 ## Load packages and create and connect to database
 
@@ -23,7 +23,7 @@ code has not previously been executed.
 
 ```{r db}
 wlf_cam_db <- dbConnect(drv = RSQLite::SQLite(),
-                       "../../database/wlf_cam.db")
+                       "../database/wlf_cam.db")
 ```
 
 ## **PROJECT_NAME** table {#project}
@@ -58,7 +58,7 @@ column names correspond.
 
 ```{r populate_project_names, eval = FALSE}
 # Read in project_name.csv file
-project_name_csv <- read.csv("../../processed_data/project_name.csv")
+project_name_csv <- read.csv("../processed_data/project_name.csv")
 
 # Get .csv column names
 colnames(project_name_csv)
@@ -107,7 +107,7 @@ column names correspond.
 
 ```{r populate_camera_array, eval = FALSE}
 # Read in camera_array.csv file
-camera_array_csv <- read.csv("../../processed_data/camera_array.csv")
+camera_array_csv <- read.csv("../processed_data/camera_array.csv")
 
 # Get .csv column names
 colnames(camera_array_csv)
@@ -154,7 +154,7 @@ column names correspond.
 
 ```{r populate_site_name, eval = FALSE}
 # Read in site_name.csv file
-site_name_csv <- read.csv("../../processed_data/site_name.csv")
+site_name_csv <- read.csv("../processed_data/site_name.csv")
 
 # Get .csv column names
 colnames(site_name_csv)
@@ -214,7 +214,7 @@ column names correspond.
 
 ```{r col_names_deployment, eval = FALSE}
 # Read in deployment.csv file
-deployment_csv <- read.csv("../../processed_data/deployment.csv")
+deployment_csv <- read.csv("../processed_data/deployment.csv")
 
 # Get .csv column names
 colnames(deployment_csv)
@@ -226,8 +226,8 @@ Before populating the table, note the discrepancy in names of variables.
 
 ```{r show_names_deployment, echo = FALSE}
 wlf_cam_db <- dbConnect(drv = SQLite(),
-                       "../../database/wlf_cam.db")
-deployment_csv <- read.csv("../../processed_data/deployment.csv")
+                       "../database/wlf_cam.db")
+deployment_csv <- read.csv("../processed_data/deployment.csv")
 
 # Get .csv column names
 colnames(deployment_csv)
@@ -291,7 +291,7 @@ column names correspond.
 
 ```{r populate_sequence, eval = FALSE}
 # Read in sequence.csv file
-sequence_csv <- read.csv("../../processed_data/sequence.csv")
+sequence_csv <- read.csv("../processed_data/sequence.csv")
 
 # Get .csv column names
 colnames(sequence_csv)
@@ -353,7 +353,7 @@ consistent for the variables *age* and *sex*.
 
 ```{r convert_null_detection, eval = FALSE}
 # Read in detection.csv file
-detection_csv <- read.csv("../../processed_data/detection.csv")
+detection_csv <- read.csv("../processed_data/detection.csv")
 
 # Convert ' ' or 'Unknown' values to blank ('')
 detection_csv[detection_csv == " " | detection_csv == "Unknown" | detection_csv == "unknown"] <- NA
