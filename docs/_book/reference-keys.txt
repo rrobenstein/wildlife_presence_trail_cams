@@ -2,7 +2,6 @@ remote-sensing-and-wildlife
 snapshot-usa
 study-area
 data-description
-references
 database-creation-and-population
 load-packages-and-create-and-connect-to-database
 project

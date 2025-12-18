@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Wildlife Presence Using Trail Cameras</title>
+  <title>Page not found | Wildlife Presence Using Trail Cameras</title>
   <meta name="description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Wildlife Presence Using Trail Cameras" />
+  <meta property="og:title" content="Page not found | Wildlife Presence Using Trail Cameras" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
   <meta name="github-repo" content="rrobenstein.github.io/wildlife_presence_trail_cams" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Wildlife Presence Using Trail Cameras" />
+  <meta name="twitter:title" content="Page not found | Wildlife Presence Using Trail Cameras" />
   
   <meta name="twitter:description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
   
@@ -31,7 +31,7 @@
   
   
 
-<link rel="next" href="database-creation-and-population.html"/>
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -256,82 +256,11 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Wildlife Presence Using Trail Cameras</h1>
-<p class="author"><em>Riley Robenstein</em></p>
-<p class="date"><em>2025-12-08</em></p>
-</div>
-<div id="remote-sensing-and-wildlife" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">1</span> Remote sensing and wildlife<a href="index.html#remote-sensing-and-wildlife" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Use of remote sensing in wildlife research has become increasingly
-prevalent, particularly with trail cameras. Trail cameras can provide
-information about wildlife presence and absence when human observations
-are unavailable or may disturb wildlife activity and presence. Continued
-collection of data with trail cameras can provide spatial and temporal
-trends of larger wildlife. The SNAPSHOT USA project contains several
-years of camera trap data across the US available for public use
-<span class="citation">(<a href="#ref-rooney2025b">Rooney et al. 2025<em>b</em></a>)</span>. Data were collected using un-baited cameras and
-identified through <a href="https://app.wildlifeinsights.org/initiatives/2000156/Snapshot-USA">Wildlife
-Insights</a>.
-The objective of this project is to become familiar with trail camera
-data to assess wildlife presence and activity. This will ultimately help
-in future data collection using trail cameras and acoustic recording
-units deployed and point count surveys conducted in the University of
-Idaho Experimental Forest to assess how deadwood structures may
-influence wildlife presence and activity. This file assists in building
-a database and cleaning and visualizing trail camera data.</p>
-<div id="snapshot-usa" class="section level2 hasAnchor" number="1.1">
-<h2><span class="header-section-number">1.1</span> SNAPSHOT USA<a href="index.html#snapshot-usa" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>SNAPSHOT USA is a national project where camera trap surveys are
-conducted across all 50 US states annually from September-October to
-estimate wildlife abundance and distributions <span class="citation">(<a href="#ref-rooney2025a">Rooney et al. 2025<em>a</em></a>)</span>. This
-project primarily focuses on mammalian species, with large birds also
-included. SNAPSHOT USA’s protocol provides a solid base for community
-science, and various organizations across the country collaborate to
-produce these spatial and temporal wildlife data. Some contributors have
-provided data outside the standard collection period, so the 2019-2023
-data span from August 1-December 29 <span class="citation">(<a href="#ref-rooney2025a">Rooney et al. 2025<em>a</em></a>)</span>. Each collaborator is
-required to deploy a camera array made up of a minimum of eight
-un-baited cameras. The SNAPSHOT USA protocol requires at least 400
-camera trap-nights between September and October per year for each
-camera array <span class="citation">(<a href="#ref-rooney2025a">Rooney et al. 2025<em>a</em></a>)</span>.</p>
-</div>
-<div id="study-area" class="section level2 hasAnchor" number="1.2">
-<h2><span class="header-section-number">1.2</span> Study area<a href="index.html#study-area" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>My focal area included a total of 15 trail camera sites in Idaho,
-Washington, and Oregon (Figure 1).</p>
-<div class="float">
-<img src="figs/study_area.jpg" alt="Figure 1. Camera array locations and Bailey’s ecoregions of the US from 2019-2023 (Rooney 2024). Darker points represent locations that fall within Idaho, Washington and Oregon and size correlates to the number of years surveyed. Colored polygons represent different ecoregions." />
-<div class="figcaption">Figure 1. Camera array locations and Bailey’s ecoregions of the US
-from 2019-2023 <span class="citation">(<a href="#ref-rooney2024">Rooney 2024</a>)</span>. Darker points represent locations that
-fall within Idaho, Washington and Oregon and size correlates to the
-number of years surveyed. Colored polygons represent different
-ecoregions.</div>
-</div>
-</div>
-<div id="data-description" class="section level2 hasAnchor" number="1.3">
-<h2><span class="header-section-number">1.3</span> Data description<a href="index.html#data-description" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>I subsetted these data to only include cameras deployed in Idaho,
-Washington and Oregon. Data consisted of camera arrays, camera
-locations, general habitat characteristics, deployment periods, image
-sequences, and taxonomic information across various levels for species
-identification <span class="citation">(<a href="#ref-rooney2025b">Rooney et al. 2025<em>b</em></a>)</span>. Further information regarding camera
-array locations and ecoregions were added for camera arrays
-<span class="citation">(<a href="#ref-rooney2024">Rooney 2024</a>)</span>.</p>
-
-</div>
-</div>
-<h3>References</h3>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-rooney2024" class="csl-entry">
-Rooney, B. 2024. Years of data collected by camera arrays. &lt;<a href="https://public.tableau.com/app/profile/brigit.rooney/viz/YearsofDataCollectedbyCameraArrays/Sheet6">https://public.tableau.com/app/profile/brigit.rooney/viz/YearsofDataCollectedbyCameraArrays/Sheet6</a>&gt;.
-</div>
-<div id="ref-rooney2025a" class="csl-entry">
-Rooney, B., R. Kays, M. V. Cove, A. Jensen, B. R. Goldstein, C. Pate, P. Castiblanco, M. E. Abell, J. Adley, B. Agenbroad, et al. 2025<em>a</em>. SNAPSHOT USA 2019-2023: The first five years of data from a coordinated camera trap survey of the united states. Global Ecology and Biogeography 34:e13941. &lt;<a href="https://onlinelibrary.wiley.com/doi/full/10.1111/geb.13941">https://onlinelibrary.wiley.com/doi/full/10.1111/geb.13941</a>&gt;.
-</div>
-<div id="ref-rooney2025b" class="csl-entry">
-Rooney, B., W. McShea, R. Kays, and M. Cove. 2025<em>b</em>. SNAPSHOT USA 2019-2023: the first five years of data from a coordinated camera trap survey of the United States [Dataset]. Dryad. &lt;<a href="https://datadryad.org/dataset/doi:10.5061/dryad.k0p2ngfhn">https://datadryad.org/dataset/doi:10.5061/dryad.k0p2ngfhn</a>&gt;.
-</div>
+<div id="page-not-found" class="section level1">
+<h1>Page not found</h1>
+<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
+<p>You may want to try searching to find the page's new location, or use
+the table of contents to find the page you are looking for.</p>
 </div>
             </section>
 
@@ -339,7 +268,7 @@ Rooney, B., W. McShea, R. Kays, and M. Cove. 2025<em>b</em>. SNAPSHOT USA 2019-2
         </div>
       </div>
 
-<a href="database-creation-and-population.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

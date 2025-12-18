@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 4 Data visualization | Wildlife Presence Using Trail Cameras</title>
+  <title>4 Data visualization | Wildlife Presence Using Trail Cameras</title>
   <meta name="description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 4 Data visualization | Wildlife Presence Using Trail Cameras" />
+  <meta property="og:title" content="4 Data visualization | Wildlife Presence Using Trail Cameras" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
   <meta name="github-repo" content="rrobenstein.github.io/wildlife_presence_trail_cams" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 4 Data visualization | Wildlife Presence Using Trail Cameras" />
+  <meta name="twitter:title" content="4 Data visualization | Wildlife Presence Using Trail Cameras" />
   
   <meta name="twitter:description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
   
@@ -165,7 +165,6 @@ div.csl-indent {
 <li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#snapshot-usa"><i class="fa fa-check"></i><b>1.1</b> SNAPSHOT USA</a></li>
 <li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#study-area"><i class="fa fa-check"></i><b>1.2</b> Study area</a></li>
 <li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#data-description"><i class="fa fa-check"></i><b>1.3</b> Data description</a></li>
-<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.4</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html"><i class="fa fa-check"></i><b>2</b> Database creation and population</a>
 <ul>
@@ -258,7 +257,7 @@ div.csl-indent {
 
             <section class="normal" id="section-">
 <div id="data-visualization" class="section level1 hasAnchor" number="4">
-<h1><span class="header-section-number">Chapter 4</span> Data visualization<a href="data-visualization.html#data-visualization" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<h1><span class="header-section-number">4</span> Data visualization<a href="data-visualization.html#data-visualization" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Begin visualizing trends seen in the camera trap data. First, connect to the database and load the tables and packages from before. We will also be using <code>ggplot2</code>.</p>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="data-visualization.html#cb64-1" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
 <span id="cb64-2"><a href="data-visualization.html#cb64-2" tabindex="-1"></a><span class="fu">library</span>(RSQLite)</span>
@@ -423,6 +422,17 @@ div.csl-indent {
 <p><img src="_main_files/figure-html/wlf_human_julian-1.png" width="672" /></p>
 <p>Surprisingly, wildlife detections do not appear to decrease as human and domestic animal detections increase.</p>
 
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div class="csl-entry">
+Rooney, B. 2024. Years of data collected by camera arrays. &lt;<a href="https://public.tableau.com/app/profile/brigit.rooney/viz/YearsofDataCollectedbyCameraArrays/Sheet6">https://public.tableau.com/app/profile/brigit.rooney/viz/YearsofDataCollectedbyCameraArrays/Sheet6</a>&gt;.
+</div>
+<div class="csl-entry">
+Rooney, B., R. Kays, M. V. Cove, A. Jensen, B. R. Goldstein, C. Pate, P. Castiblanco, M. E. Abell, J. Adley, B. Agenbroad, et al. 2025<em>a</em>. SNAPSHOT USA 2019-2023: The first five years of data from a coordinated camera trap survey of the united states. Global Ecology and Biogeography 34:e13941. &lt;<a href="https://onlinelibrary.wiley.com/doi/full/10.1111/geb.13941">https://onlinelibrary.wiley.com/doi/full/10.1111/geb.13941</a>&gt;.
+</div>
+<div class="csl-entry">
+Rooney, B., W. McShea, R. Kays, and M. Cove. 2025<em>b</em>. SNAPSHOT USA 2019-2023: the first five years of data from a coordinated camera trap survey of the United States [Dataset]. Dryad. &lt;<a href="https://datadryad.org/dataset/doi:10.5061/dryad.k0p2ngfhn">https://datadryad.org/dataset/doi:10.5061/dryad.k0p2ngfhn</a>&gt;.
+</div>
+</div>
 </div>
 </div>
 </div>

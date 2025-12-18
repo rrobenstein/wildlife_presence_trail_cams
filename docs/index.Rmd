@@ -1,4 +1,4 @@
---- 
+---
 title: "Wildlife Presence Using Trail Cameras"
 author: "Riley Robenstein"
 date: "2025-12-08"
@@ -19,11 +19,9 @@ knitr::write_bib(c(
 ), 'packages.bib')
 ```
 
-
 ```{r opts, echo = FALSE, eval = TRUE}
 knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
 ```
-
 
 # Remote sensing and wildlife
 
@@ -67,9 +65,9 @@ My focal area included a total of 15 trail camera sites in Idaho,
 Washington, and Oregon (Figure 1).
 
 ![Figure 1. Camera array locations and Bailey's ecoregions of the US
-from 2019-2023 [@rooney2024]. Darker points represent locations that fall within
-Idaho, Washington and Oregon and size correlates to the number of years
-surveyed. Colored polygons represent different
+from 2019-2023 [@rooney2024]. Darker points represent locations that
+fall within Idaho, Washington and Oregon and size correlates to the
+number of years surveyed. Colored polygons represent different
 ecoregions.](figs/study_area.jpg)
 
 ## Data description
@@ -81,8 +79,3 @@ sequences, and taxonomic information across various levels for species
 identification [@rooney2025b]. Further information regarding camera
 array locations and ecoregions were added for camera arrays
 [@rooney2024].
-
-## References
-
-::: {#refs}
-:::
