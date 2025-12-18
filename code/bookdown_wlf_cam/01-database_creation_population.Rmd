@@ -6,7 +6,7 @@ created a relational database with R and SQL to easily navigate these
 data (Figure 2). Note that the header of each box corresponds to the name of each table. The database can be reproduced with the code in sections **2.1-2.8**.
 
 ![Figure 2. Entity relationship diagram of relational database
-structure.](../../documents/db_structure_ssusa.jpg)
+structure.](documents/db_structure_ssusa.jpg)
 
 ## Load packages and create and connect to database
 

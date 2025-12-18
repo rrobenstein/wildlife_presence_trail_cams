@@ -14,3 +14,4 @@ RnwWeave: Sweave
 LaTeX: pdfLaTeX
 
 BuildType: Website
+WebsitePath: C:/Users/roben/OneDrive/Desktop/wlf5530/wildlife_presence_trail_cams/code/bookdown_wlf_cam
