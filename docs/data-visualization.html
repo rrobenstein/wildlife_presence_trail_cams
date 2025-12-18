@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 Data visualization | Wildlife Presence Using Trail Cameras</title>
+  <meta name="description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 Data visualization | Wildlife Presence Using Trail Cameras" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
+  <meta name="github-repo" content="rrobenstein.github.io/wildlife_presence_trail_cams" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Data visualization | Wildlife Presence Using Trail Cameras" />
+  
+  <meta name="twitter:description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
+  
+
+<meta name="author" content="Riley Robenstein" />
+
+
+<meta name="date" content="2025-12-08" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="data-exploration.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="open_sans.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Remote sensing and wildlife</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#snapshot-usa"><i class="fa fa-check"></i><b>1.1</b> SNAPSHOT USA</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#study-area"><i class="fa fa-check"></i><b>1.2</b> Study area</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#data-description"><i class="fa fa-check"></i><b>1.3</b> Data description</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.4</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html"><i class="fa fa-check"></i><b>2</b> Database creation and population</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#load-packages-and-create-and-connect-to-database"><i class="fa fa-check"></i><b>2.1</b> Load packages and create and connect to database</a></li>
+<li class="chapter" data-level="2.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#project"><i class="fa fa-check"></i><b>2.2</b> <strong>PROJECT_NAME</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-project_name-table"><i class="fa fa-check"></i><b>2.2.1</b> Create <strong>project_name</strong> table</a></li>
+<li class="chapter" data-level="2.2.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-project_name-table"><i class="fa fa-check"></i><b>2.2.2</b> Populate <strong>project_name</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#array"><i class="fa fa-check"></i><b>2.3</b> <strong>CAMERA_ARRAY</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-camera_array-table"><i class="fa fa-check"></i><b>2.3.1</b> Create <strong>camera_array</strong> table</a></li>
+<li class="chapter" data-level="2.3.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-camera_array-table"><i class="fa fa-check"></i><b>2.3.2</b> Populate <strong>camera_array</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#site"><i class="fa fa-check"></i><b>2.4</b> <strong>SITE_NAME</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-site_name-table"><i class="fa fa-check"></i><b>2.4.1</b> Create <strong>site_name</strong> table</a></li>
+<li class="chapter" data-level="2.4.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-site_name-table"><i class="fa fa-check"></i><b>2.4.2</b> Populate <strong>site_name</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#deployment"><i class="fa fa-check"></i><b>2.5</b> <strong>DEPLOYMENT</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-deployment-table"><i class="fa fa-check"></i><b>2.5.1</b> Create <strong>deployment</strong> table</a></li>
+<li class="chapter" data-level="2.5.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-deployment-table"><i class="fa fa-check"></i><b>2.5.2</b> Populate <strong>deployment</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#sequence"><i class="fa fa-check"></i><b>2.6</b> <strong>SEQUENCE</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-sequence-table"><i class="fa fa-check"></i><b>2.6.1</b> Create <strong>sequence</strong> table</a></li>
+<li class="chapter" data-level="2.6.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-sequence-table"><i class="fa fa-check"></i><b>2.6.2</b> Populate <strong>sequence</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#detection-table"><i class="fa fa-check"></i><b>2.7</b> <strong>DETECTION</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.7.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-detection-table"><i class="fa fa-check"></i><b>2.7.1</b> Create <strong>detection</strong> table</a></li>
+<li class="chapter" data-level="2.7.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#clean-detection-table"><i class="fa fa-check"></i><b>2.7.2</b> Clean <strong>detection</strong> table</a></li>
+<li class="chapter" data-level="2.7.3" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-detection-table"><i class="fa fa-check"></i><b>2.7.3</b> Populate <strong>detection</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.8" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#check-database"><i class="fa fa-check"></i><b>2.8</b> Check database</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="data-exploration.html"><a href="data-exploration.html"><i class="fa fa-check"></i><b>3</b> Data exploration</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="data-exploration.html"><a href="data-exploration.html#load-package-database-and-tables"><i class="fa fa-check"></i><b>3.1</b> Load package, database and tables</a></li>
+<li class="chapter" data-level="3.2" data-path="data-exploration.html"><a href="data-exploration.html#exploratory-summaries"><i class="fa fa-check"></i><b>3.2</b> Exploratory summaries</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="data-exploration.html"><a href="data-exploration.html#deployments-per-year"><i class="fa fa-check"></i><b>3.2.1</b> Deployments per year</a></li>
+<li class="chapter" data-level="3.2.2" data-path="data-exploration.html"><a href="data-exploration.html#arrays-with-8-cameras"><i class="fa fa-check"></i><b>3.2.2</b> Arrays with &gt; 8 cameras</a></li>
+<li class="chapter" data-level="3.2.3" data-path="data-exploration.html"><a href="data-exploration.html#sites-reused"><i class="fa fa-check"></i><b>3.2.3</b> Sites reused</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="data-exploration.html"><a href="data-exploration.html#number-of-species"><i class="fa fa-check"></i><b>3.3</b> Number of species</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="data-exploration.html"><a href="data-exploration.html#by-habitat"><i class="fa fa-check"></i><b>3.3.1</b> By habitat</a></li>
+<li class="chapter" data-level="3.3.2" data-path="data-exploration.html"><a href="data-exploration.html#by-feature-type"><i class="fa fa-check"></i><b>3.3.2</b> By feature type</a></li>
+<li class="chapter" data-level="3.3.3" data-path="data-exploration.html"><a href="data-exploration.html#by-habitat-and-feature-type"><i class="fa fa-check"></i><b>3.3.3</b> By habitat and feature type</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="data-exploration.html"><a href="data-exploration.html#number-of-detections"><i class="fa fa-check"></i><b>3.4</b> Number of detections</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="data-exploration.html"><a href="data-exploration.html#by-year"><i class="fa fa-check"></i><b>3.4.1</b> By year</a></li>
+<li class="chapter" data-level="3.4.2" data-path="data-exploration.html"><a href="data-exploration.html#by-month"><i class="fa fa-check"></i><b>3.4.2</b> By month</a></li>
+<li class="chapter" data-level="3.4.3" data-path="data-exploration.html"><a href="data-exploration.html#by-site"><i class="fa fa-check"></i><b>3.4.3</b> By site</a></li>
+<li class="chapter" data-level="3.4.4" data-path="data-exploration.html"><a href="data-exploration.html#by-site-and-month"><i class="fa fa-check"></i><b>3.4.4</b> By site and month</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="data-visualization.html"><a href="data-visualization.html"><i class="fa fa-check"></i><b>4</b> Data visualization</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="data-visualization.html"><a href="data-visualization.html#species-in-september-and-october"><i class="fa fa-check"></i><b>4.1</b> Species in September and October</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="data-visualization.html"><a href="data-visualization.html#species-detected-100-times"><i class="fa fa-check"></i><b>4.1.1</b> Species detected &gt; 100 times</a></li>
+<li class="chapter" data-level="4.1.2" data-path="data-visualization.html"><a href="data-visualization.html#carnivora-order-detections"><i class="fa fa-check"></i><b>4.1.2</b> Carnivora order detections</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="data-visualization.html"><a href="data-visualization.html#detections-across-orders"><i class="fa fa-check"></i><b>4.2</b> Detections across orders</a></li>
+<li class="chapter" data-level="4.3" data-path="data-visualization.html"><a href="data-visualization.html#detections-over-time"><i class="fa fa-check"></i><b>4.3</b> Detections over time</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="data-visualization.html"><a href="data-visualization.html#wildlife-detections-over-time"><i class="fa fa-check"></i><b>4.3.1</b> Wildlife detections over time</a></li>
+<li class="chapter" data-level="4.3.2" data-path="data-visualization.html"><a href="data-visualization.html#wildlife-and-human-domestic-detections-over-time"><i class="fa fa-check"></i><b>4.3.2</b> Wildlife and human-domestic detections over time</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Wildlife Presence Using Trail Cameras</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="data-visualization" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Data visualization<a href="data-visualization.html#data-visualization" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Begin visualizing trends seen in the camera trap data. First, connect to the database and load the tables and packages from before. We will also be using <code>ggplot2</code>.</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="data-visualization.html#cb64-1" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb64-2"><a href="data-visualization.html#cb64-2" tabindex="-1"></a><span class="fu">library</span>(RSQLite)</span>
+<span id="cb64-3"><a href="data-visualization.html#cb64-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb64-4"><a href="data-visualization.html#cb64-4" tabindex="-1"></a></span>
+<span id="cb64-5"><a href="data-visualization.html#cb64-5" tabindex="-1"></a>wlf_cam_db <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="at">drv =</span> RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(),</span>
+<span id="cb64-6"><a href="data-visualization.html#cb64-6" tabindex="-1"></a>                       <span class="st">&quot;../../database/wlf_cam.db&quot;</span>)</span>
+<span id="cb64-7"><a href="data-visualization.html#cb64-7" tabindex="-1"></a></span>
+<span id="cb64-8"><a href="data-visualization.html#cb64-8" tabindex="-1"></a>project <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM project_name;&quot;</span>)</span>
+<span id="cb64-9"><a href="data-visualization.html#cb64-9" tabindex="-1"></a>array <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM camera_array;&quot;</span>)</span>
+<span id="cb64-10"><a href="data-visualization.html#cb64-10" tabindex="-1"></a>site <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM site_name;&quot;</span>)</span>
+<span id="cb64-11"><a href="data-visualization.html#cb64-11" tabindex="-1"></a>deployment <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM deployment;&quot;</span>)</span>
+<span id="cb64-12"><a href="data-visualization.html#cb64-12" tabindex="-1"></a>sequence <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM sequence;&quot;</span>)</span>
+<span id="cb64-13"><a href="data-visualization.html#cb64-13" tabindex="-1"></a>detection <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM detection;&quot;</span>)</span></code></pre></div>
+<p>To use the same color scheme shown, run <code>devtools::install_github("cdanielcadena/tanagR")</code> and load the package <code>tanagR</code>.</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="data-visualization.html#cb65-1" tabindex="-1"></a><span class="fu">library</span>(tanagR)</span></code></pre></div>
+<div id="species-in-september-and-october" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Species in September and October<a href="data-visualization.html#species-in-september-and-october" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We want to know the number of individuals in each species detected in September and October. There are many species observed throughout these data, so we will break down the detections as we go.</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="data-visualization.html#cb66-1" tabindex="-1"></a><span class="co"># filter out NA values for species</span></span>
+<span id="cb66-2"><a href="data-visualization.html#cb66-2" tabindex="-1"></a>sp_detect <span class="ot">&lt;-</span> detection[<span class="sc">!</span><span class="fu">is.na</span>(detection<span class="sc">$</span>species), ]</span>
+<span id="cb66-3"><a href="data-visualization.html#cb66-3" tabindex="-1"></a></span>
+<span id="cb66-4"><a href="data-visualization.html#cb66-4" tabindex="-1"></a>sp_month <span class="ot">&lt;-</span> sp_detect[sp_detect<span class="sc">$</span>species <span class="sc">!=</span> <span class="st">&quot;sapiens&quot;</span>, ] <span class="sc">%&gt;%</span> <span class="co"># filter out detections of humans</span></span>
+<span id="cb66-5"><a href="data-visualization.html#cb66-5" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;Domestic&quot;</span>, common_name)) <span class="sc">%&gt;%</span> <span class="co"># filter out domestic animals</span></span>
+<span id="cb66-6"><a href="data-visualization.html#cb66-6" tabindex="-1"></a>  <span class="fu">left_join</span>(sequence, <span class="at">by =</span> <span class="st">&quot;sequence_id&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># join sequence table to detection using sequence_id</span></span>
+<span id="cb66-7"><a href="data-visualization.html#cb66-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">genus_species =</span> <span class="fu">paste0</span>(genus, <span class="st">&quot; &quot;</span>, species), <span class="co"># create new variable with genus and species</span></span>
+<span id="cb66-8"><a href="data-visualization.html#cb66-8" tabindex="-1"></a>         <span class="at">month =</span> <span class="fu">month</span>(<span class="fu">mdy_hm</span>(start_time), <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span> <span class="co"># acquire month from start sequence</span></span>
+<span id="cb66-9"><a href="data-visualization.html#cb66-9" tabindex="-1"></a>  <span class="fu">filter</span>(month <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;September&quot;</span>, <span class="st">&quot;October&quot;</span>)) <span class="sc">%&gt;%</span> <span class="co"># only include detections from Sept and Oct</span></span>
+<span id="cb66-10"><a href="data-visualization.html#cb66-10" tabindex="-1"></a>  <span class="fu">group_by</span>(month, common_name) <span class="sc">%&gt;%</span> <span class="co"># group by month, then common_name</span></span>
+<span id="cb66-11"><a href="data-visualization.html#cb66-11" tabindex="-1"></a>  <span class="fu">select</span>(order, family, genus_species, group_number, common_name, month) <span class="co"># select variables genus_species, group_number, and habitat</span></span></code></pre></div>
+<div id="species-detected-100-times" class="section level3 hasAnchor" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Species detected &gt; 100 times<a href="data-visualization.html#species-detected-100-times" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Let’s visualize this for species with more than 100 detections in September or October.</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="data-visualization.html#cb67-1" tabindex="-1"></a>mult_detect <span class="ot">&lt;-</span> sp_month <span class="sc">%&gt;%</span> </span>
+<span id="cb67-2"><a href="data-visualization.html#cb67-2" tabindex="-1"></a>  <span class="fu">group_by</span>(month, common_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb67-3"><a href="data-visualization.html#cb67-3" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n_individuals =</span> <span class="fu">sum</span>(group_number)) <span class="sc">%&gt;%</span> <span class="co"># calculate number of individuals detected per species per month</span></span>
+<span id="cb67-4"><a href="data-visualization.html#cb67-4" tabindex="-1"></a>  <span class="fu">filter</span>(n_individuals <span class="sc">&gt;</span> <span class="dv">100</span>) <span class="co"># select species detected &gt; 100 times</span></span>
+<span id="cb67-5"><a href="data-visualization.html#cb67-5" tabindex="-1"></a></span>
+<span id="cb67-6"><a href="data-visualization.html#cb67-6" tabindex="-1"></a><span class="fu">ggplot</span>(mult_detect, <span class="fu">aes</span>(<span class="at">x =</span> common_name, <span class="at">y =</span> n_individuals, <span class="at">fill =</span> month)) <span class="sc">+</span></span>
+<span id="cb67-7"><a href="data-visualization.html#cb67-7" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="sc">+</span></span>
+<span id="cb67-8"><a href="data-visualization.html#cb67-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Species detected&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of individuals&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Month&quot;</span>) <span class="sc">+</span></span>
+<span id="cb67-9"><a href="data-visualization.html#cb67-9" tabindex="-1"></a>  <span class="fu">scale_fill_tanagr</span>(<span class="at">palette_name =</span> <span class="st">&quot;cyanerpes_cyaneus&quot;</span>) <span class="sc">+</span></span>
+<span id="cb67-10"><a href="data-visualization.html#cb67-10" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb67-11"><a href="data-visualization.html#cb67-11" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">vjust =</span> <span class="dv">1</span>))</span></code></pre></div>
+<p><img src="_main_files/figure-html/vis_100_detect_months-1.png" width="672" /></p>
+</div>
+<div id="carnivora-order-detections" class="section level3 hasAnchor" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Carnivora order detections<a href="data-visualization.html#carnivora-order-detections" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Focusing on the order Carnivora, we want to visualize the number of individuals in each species detected in September and October.</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="data-visualization.html#cb68-1" tabindex="-1"></a>carnivora <span class="ot">&lt;-</span> sp_month[sp_month<span class="sc">$</span>order <span class="sc">==</span> <span class="st">&quot;Carnivora&quot;</span>, ] <span class="sc">%&gt;%</span> <span class="co"># select species in order Carnivora</span></span>
+<span id="cb68-2"><a href="data-visualization.html#cb68-2" tabindex="-1"></a>  <span class="fu">group_by</span>(month, common_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb68-3"><a href="data-visualization.html#cb68-3" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n_individuals =</span> <span class="fu">sum</span>(group_number)) <span class="co"># calculate number of individuals detected per species per month</span></span>
+<span id="cb68-4"><a href="data-visualization.html#cb68-4" tabindex="-1"></a></span>
+<span id="cb68-5"><a href="data-visualization.html#cb68-5" tabindex="-1"></a><span class="fu">ggplot</span>(carnivora, <span class="fu">aes</span>(<span class="at">x =</span> common_name, <span class="at">y =</span> n_individuals, <span class="at">fill =</span> month)) <span class="sc">+</span></span>
+<span id="cb68-6"><a href="data-visualization.html#cb68-6" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="sc">+</span></span>
+<span id="cb68-7"><a href="data-visualization.html#cb68-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Species detected&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of individuals&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Month&quot;</span>) <span class="sc">+</span></span>
+<span id="cb68-8"><a href="data-visualization.html#cb68-8" tabindex="-1"></a>  <span class="fu">scale_fill_tanagr</span>(<span class="at">palette_name =</span> <span class="st">&quot;ramphocelus_sanguinolentus&quot;</span>) <span class="sc">+</span></span>
+<span id="cb68-9"><a href="data-visualization.html#cb68-9" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb68-10"><a href="data-visualization.html#cb68-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">vjust =</span> <span class="dv">1</span>))</span></code></pre></div>
+<p><img src="_main_files/figure-html/vis_carnivora_months-1.png" width="672" /></p>
+</div>
+</div>
+<div id="detections-across-orders" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Detections across orders<a href="data-visualization.html#detections-across-orders" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Many detections were only identified to the order level. Rather than looking at the species level, we want to visualize the number of individuals in each order detected in September and October.</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="data-visualization.html#cb69-1" tabindex="-1"></a>wlf_detect <span class="ot">&lt;-</span> detection</span>
+<span id="cb69-2"><a href="data-visualization.html#cb69-2" tabindex="-1"></a>wlf_detect<span class="sc">$</span>species[<span class="fu">is.na</span>(wlf_detect<span class="sc">$</span>species)] <span class="ot">&lt;-</span> <span class="st">&quot;unknown&quot;</span> <span class="co"># convert NA values to &quot;unknown&quot;</span></span>
+<span id="cb69-3"><a href="data-visualization.html#cb69-3" tabindex="-1"></a></span>
+<span id="cb69-4"><a href="data-visualization.html#cb69-4" tabindex="-1"></a>n_order <span class="ot">&lt;-</span> wlf_detect[wlf_detect<span class="sc">$</span>species <span class="sc">!=</span> <span class="st">&quot;sapiens&quot;</span>, ] <span class="sc">%&gt;%</span> <span class="co"># filter out detections of humans</span></span>
+<span id="cb69-5"><a href="data-visualization.html#cb69-5" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;Domestic&quot;</span>, common_name)) <span class="sc">%&gt;%</span> <span class="co"># filter out domestic animals</span></span>
+<span id="cb69-6"><a href="data-visualization.html#cb69-6" tabindex="-1"></a>  <span class="fu">left_join</span>(sequence, <span class="at">by =</span> <span class="st">&quot;sequence_id&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># join sequence table to detection using sequence_id</span></span>
+<span id="cb69-7"><a href="data-visualization.html#cb69-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">month</span>(<span class="fu">mdy_hm</span>(start_time), </span>
+<span id="cb69-8"><a href="data-visualization.html#cb69-8" tabindex="-1"></a>                       <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span> <span class="co"># acquire month from start sequence</span></span>
+<span id="cb69-9"><a href="data-visualization.html#cb69-9" tabindex="-1"></a>  <span class="fu">filter</span>(month <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;September&quot;</span>, <span class="st">&quot;October&quot;</span>), <span class="co"># only include detections from Sept and Oct</span></span>
+<span id="cb69-10"><a href="data-visualization.html#cb69-10" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">is.na</span>(order)) <span class="sc">%&gt;%</span> <span class="co"># remove NAs</span></span>
+<span id="cb69-11"><a href="data-visualization.html#cb69-11" tabindex="-1"></a>  <span class="fu">group_by</span>(month, order) <span class="sc">%&gt;%</span> <span class="co"># group by month, then order </span></span>
+<span id="cb69-12"><a href="data-visualization.html#cb69-12" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_individuals =</span> <span class="fu">sum</span>(group_number))  <span class="co"># calculate number of individuals detected per order per month</span></span>
+<span id="cb69-13"><a href="data-visualization.html#cb69-13" tabindex="-1"></a></span>
+<span id="cb69-14"><a href="data-visualization.html#cb69-14" tabindex="-1"></a><span class="fu">ggplot</span>(n_order, <span class="fu">aes</span>(<span class="at">x =</span> order, <span class="at">y =</span> n_individuals, <span class="at">fill =</span> month)) <span class="sc">+</span></span>
+<span id="cb69-15"><a href="data-visualization.html#cb69-15" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="sc">+</span></span>
+<span id="cb69-16"><a href="data-visualization.html#cb69-16" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Order detected&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of individuals&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Month&quot;</span>) <span class="sc">+</span></span>
+<span id="cb69-17"><a href="data-visualization.html#cb69-17" tabindex="-1"></a>  <span class="fu">scale_fill_tanagr</span>(<span class="at">palette_name =</span> <span class="st">&quot;tangara_chilensis&quot;</span>) <span class="sc">+</span></span>
+<span id="cb69-18"><a href="data-visualization.html#cb69-18" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb69-19"><a href="data-visualization.html#cb69-19" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">vjust =</span> <span class="dv">1</span>))</span></code></pre></div>
+<p><img src="_main_files/figure-html/vis_order_months-1.png" width="672" /></p>
+</div>
+<div id="detections-over-time" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Detections over time<a href="data-visualization.html#detections-over-time" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We want to visualize wildlife trends over time in a couple of ways. Let’s break this down again to help understand the bigger picture.</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="data-visualization.html#cb70-1" tabindex="-1"></a>detect_wlf <span class="ot">&lt;-</span> detection</span>
+<span id="cb70-2"><a href="data-visualization.html#cb70-2" tabindex="-1"></a>detect_wlf<span class="sc">$</span>term[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;Domestic&quot;</span>, detect_wlf<span class="sc">$</span>common_name)] <span class="ot">&lt;-</span> <span class="st">&quot;wildlife&quot;</span></span>
+<span id="cb70-3"><a href="data-visualization.html#cb70-3" tabindex="-1"></a>detect_wlf<span class="sc">$</span>term[detect_wlf<span class="sc">$</span>common_name <span class="sc">!=</span> <span class="st">&quot;sapiens&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;wildlife&quot;</span> </span>
+<span id="cb70-4"><a href="data-visualization.html#cb70-4" tabindex="-1"></a>  <span class="co"># define non-human and non-domestic life as wildlife in new column &#39;term&#39;</span></span>
+<span id="cb70-5"><a href="data-visualization.html#cb70-5" tabindex="-1"></a></span>
+<span id="cb70-6"><a href="data-visualization.html#cb70-6" tabindex="-1"></a>detect_wlf<span class="sc">$</span>term[detect_wlf<span class="sc">$</span>species <span class="sc">==</span> <span class="st">&quot;sapiens&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;human-domestic&quot;</span> </span>
+<span id="cb70-7"><a href="data-visualization.html#cb70-7" tabindex="-1"></a>  <span class="co"># define humans as human or domestic life</span></span>
+<span id="cb70-8"><a href="data-visualization.html#cb70-8" tabindex="-1"></a>detect_wlf<span class="sc">$</span>term[detect_wlf<span class="sc">$</span>common_name <span class="sc">==</span> <span class="st">&quot;Domestic Cat&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;human-domestic&quot;</span> </span>
+<span id="cb70-9"><a href="data-visualization.html#cb70-9" tabindex="-1"></a>  <span class="co"># define domestic cats as human or domestic life</span></span>
+<span id="cb70-10"><a href="data-visualization.html#cb70-10" tabindex="-1"></a>detect_wlf<span class="sc">$</span>term[detect_wlf<span class="sc">$</span>common_name <span class="sc">==</span> <span class="st">&quot;Domestic Cattle&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;human-domestic&quot;</span></span>
+<span id="cb70-11"><a href="data-visualization.html#cb70-11" tabindex="-1"></a>  <span class="co"># define domestic cattle as human or domestic life</span></span>
+<span id="cb70-12"><a href="data-visualization.html#cb70-12" tabindex="-1"></a>detect_wlf<span class="sc">$</span>term[detect_wlf<span class="sc">$</span>common_name <span class="sc">==</span> <span class="st">&quot;Domestic Dog&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;human-domestic&quot;</span> </span>
+<span id="cb70-13"><a href="data-visualization.html#cb70-13" tabindex="-1"></a>  <span class="co"># define domestic dogs as human or domestic life</span></span>
+<span id="cb70-14"><a href="data-visualization.html#cb70-14" tabindex="-1"></a>detect_wlf<span class="sc">$</span>term[detect_wlf<span class="sc">$</span>common_name <span class="sc">==</span> <span class="st">&quot;Domestic Horse&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;human-domestic&quot;</span> </span>
+<span id="cb70-15"><a href="data-visualization.html#cb70-15" tabindex="-1"></a>  <span class="co"># define domestic horses as human or domestic life</span></span>
+<span id="cb70-16"><a href="data-visualization.html#cb70-16" tabindex="-1"></a>detect_wlf<span class="sc">$</span>term[detect_wlf<span class="sc">$</span>common_name <span class="sc">==</span> <span class="st">&quot;Domestic Sheep&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;human-domestic&quot;</span> </span>
+<span id="cb70-17"><a href="data-visualization.html#cb70-17" tabindex="-1"></a>  <span class="co"># define domestic sheep as human or domestic life</span></span>
+<span id="cb70-18"><a href="data-visualization.html#cb70-18" tabindex="-1"></a></span>
+<span id="cb70-19"><a href="data-visualization.html#cb70-19" tabindex="-1"></a>detect_wlf <span class="ot">&lt;-</span> detect_wlf[<span class="sc">!</span><span class="fu">is.na</span>(detect_wlf<span class="sc">$</span>common_name), ] </span>
+<span id="cb70-20"><a href="data-visualization.html#cb70-20" tabindex="-1"></a>  <span class="co"># remove wildlife undefined in the common_name</span></span>
+<span id="cb70-21"><a href="data-visualization.html#cb70-21" tabindex="-1"></a></span>
+<span id="cb70-22"><a href="data-visualization.html#cb70-22" tabindex="-1"></a>sp_time <span class="ot">&lt;-</span> detect_wlf <span class="sc">%&gt;%</span> </span>
+<span id="cb70-23"><a href="data-visualization.html#cb70-23" tabindex="-1"></a>  <span class="fu">left_join</span>(sequence, <span class="at">by =</span> <span class="st">&quot;sequence_id&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># join sequence table to detection using sequence_id</span></span>
+<span id="cb70-24"><a href="data-visualization.html#cb70-24" tabindex="-1"></a>  <span class="fu">left_join</span>(deployment, <span class="at">by =</span> <span class="st">&quot;deployment_id&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># join deployment table to detection using deployment_id</span></span>
+<span id="cb70-25"><a href="data-visualization.html#cb70-25" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">mdy</span>(<span class="fu">format</span>(<span class="fu">mdy_hm</span>(start_time), <span class="st">&quot;%m-%d-%Y&quot;</span>)), <span class="co"># acquire date from start sequence</span></span>
+<span id="cb70-26"><a href="data-visualization.html#cb70-26" tabindex="-1"></a>         <span class="at">year =</span> <span class="fu">year</span>(<span class="fu">mdy_hm</span>(start_time)), <span class="co"># acquire year from start sequence</span></span>
+<span id="cb70-27"><a href="data-visualization.html#cb70-27" tabindex="-1"></a>         <span class="at">julian_day =</span> date) <span class="co"># begin building julian day</span></span>
+<span id="cb70-28"><a href="data-visualization.html#cb70-28" tabindex="-1"></a></span>
+<span id="cb70-29"><a href="data-visualization.html#cb70-29" tabindex="-1"></a><span class="fu">year</span>(sp_time<span class="sc">$</span>julian_day) <span class="ot">&lt;-</span> <span class="dv">2000</span> <span class="co"># set year to be the same for all julian days</span></span></code></pre></div>
+<div id="wildlife-detections-over-time" class="section level3 hasAnchor" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Wildlife detections over time<a href="data-visualization.html#wildlife-detections-over-time" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We want to visualize the number of individuals detected over time and compare across years.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="data-visualization.html#cb71-1" tabindex="-1"></a>wlf_time <span class="ot">&lt;-</span> sp_time[sp_time<span class="sc">$</span>term <span class="sc">!=</span> <span class="st">&quot;human-domestic&quot;</span>, ] <span class="sc">%&gt;%</span> </span>
+<span id="cb71-2"><a href="data-visualization.html#cb71-2" tabindex="-1"></a>  <span class="fu">group_by</span>(year, julian_day) <span class="sc">%&gt;%</span> <span class="co"># group by year, then julian day</span></span>
+<span id="cb71-3"><a href="data-visualization.html#cb71-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_individuals =</span> <span class="fu">sum</span>(group_number)) <span class="co"># calculate number of individuals detected daily per year</span></span>
+<span id="cb71-4"><a href="data-visualization.html#cb71-4" tabindex="-1"></a></span>
+<span id="cb71-5"><a href="data-visualization.html#cb71-5" tabindex="-1"></a><span class="fu">ggplot</span>(wlf_time, <span class="fu">aes</span>(<span class="at">x =</span> julian_day, </span>
+<span id="cb71-6"><a href="data-visualization.html#cb71-6" tabindex="-1"></a>                     <span class="at">y =</span> n_individuals, </span>
+<span id="cb71-7"><a href="data-visualization.html#cb71-7" tabindex="-1"></a>                     <span class="at">color =</span> <span class="fu">as.factor</span>(year))) <span class="sc">+</span></span>
+<span id="cb71-8"><a href="data-visualization.html#cb71-8" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb71-9"><a href="data-visualization.html#cb71-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Time&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of individuals detected&quot;</span>, <span class="at">color =</span> <span class="st">&quot;Year&quot;</span>) <span class="sc">+</span></span>
+<span id="cb71-10"><a href="data-visualization.html#cb71-10" tabindex="-1"></a>  <span class="fu">scale_color_tanagr</span>(<span class="at">palette_name =</span> <span class="st">&quot;tangara_chilensis&quot;</span>) <span class="sc">+</span></span>
+<span id="cb71-11"><a href="data-visualization.html#cb71-11" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="_main_files/figure-html/wlf_time-1.png" width="672" /></p>
+</div>
+<div id="wildlife-and-human-domestic-detections-over-time" class="section level3 hasAnchor" number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> Wildlife and human-domestic detections over time<a href="data-visualization.html#wildlife-and-human-domestic-detections-over-time" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We want to visualize the number of individuals detected over time, along with the number of humans and domestic animals. We will first look at the year level.</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="data-visualization.html#cb72-1" tabindex="-1"></a>wlf_human_time <span class="ot">&lt;-</span> sp_time<span class="sc">%&gt;%</span> </span>
+<span id="cb72-2"><a href="data-visualization.html#cb72-2" tabindex="-1"></a>  <span class="fu">group_by</span>(date, term) <span class="sc">%&gt;%</span> <span class="co"># group by date</span></span>
+<span id="cb72-3"><a href="data-visualization.html#cb72-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_individuals =</span> <span class="fu">sum</span>(group_number)) <span class="co"># calculate number of individuals detected daily across years</span></span>
+<span id="cb72-4"><a href="data-visualization.html#cb72-4" tabindex="-1"></a></span>
+<span id="cb72-5"><a href="data-visualization.html#cb72-5" tabindex="-1"></a><span class="fu">ggplot</span>(wlf_human_time, <span class="fu">aes</span>(<span class="at">x =</span> date, </span>
+<span id="cb72-6"><a href="data-visualization.html#cb72-6" tabindex="-1"></a>                     <span class="at">y =</span> n_individuals, </span>
+<span id="cb72-7"><a href="data-visualization.html#cb72-7" tabindex="-1"></a>                     <span class="at">color =</span> term)) <span class="sc">+</span></span>
+<span id="cb72-8"><a href="data-visualization.html#cb72-8" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb72-9"><a href="data-visualization.html#cb72-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Time&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of individuals detected&quot;</span>, <span class="at">color =</span> <span class="st">&quot;Detection type&quot;</span>) <span class="sc">+</span></span>
+<span id="cb72-10"><a href="data-visualization.html#cb72-10" tabindex="-1"></a>  <span class="fu">scale_color_tanagr</span>(<span class="at">palette_name =</span> <span class="st">&quot;tangara_chilensis&quot;</span>) <span class="sc">+</span></span>
+<span id="cb72-11"><a href="data-visualization.html#cb72-11" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="_main_files/figure-html/wlf_human_time-1.png" width="672" /></p>
+<p>Now, let’s look at a monthly level.</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="data-visualization.html#cb73-1" tabindex="-1"></a>wlf_human_julian <span class="ot">&lt;-</span> sp_time<span class="sc">%&gt;%</span> </span>
+<span id="cb73-2"><a href="data-visualization.html#cb73-2" tabindex="-1"></a>  <span class="fu">group_by</span>(year, julian_day, term) <span class="sc">%&gt;%</span> <span class="co"># group by year, then julian day, then term</span></span>
+<span id="cb73-3"><a href="data-visualization.html#cb73-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_individuals =</span> <span class="fu">sum</span>(group_number)) <span class="co"># calculate number of individuals detected daily per year</span></span>
+<span id="cb73-4"><a href="data-visualization.html#cb73-4" tabindex="-1"></a></span>
+<span id="cb73-5"><a href="data-visualization.html#cb73-5" tabindex="-1"></a><span class="fu">ggplot</span>(wlf_human_julian, <span class="fu">aes</span>(<span class="at">x =</span> julian_day, </span>
+<span id="cb73-6"><a href="data-visualization.html#cb73-6" tabindex="-1"></a>                     <span class="at">y =</span> n_individuals, </span>
+<span id="cb73-7"><a href="data-visualization.html#cb73-7" tabindex="-1"></a>                     <span class="at">color =</span> term)) <span class="sc">+</span></span>
+<span id="cb73-8"><a href="data-visualization.html#cb73-8" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb73-9"><a href="data-visualization.html#cb73-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Time&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of individuals detected&quot;</span>, <span class="at">color =</span> <span class="st">&quot;Detection type&quot;</span>) <span class="sc">+</span></span>
+<span id="cb73-10"><a href="data-visualization.html#cb73-10" tabindex="-1"></a>  <span class="fu">scale_color_tanagr</span>(<span class="at">palette_name =</span> <span class="st">&quot;tangara_chilensis&quot;</span>) <span class="sc">+</span></span>
+<span id="cb73-11"><a href="data-visualization.html#cb73-11" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="_main_files/figure-html/wlf_human_julian-1.png" width="672" /></p>
+<p>Surprisingly, wildlife detections do not appear to decrease as human and domestic animal detections increase.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="data-exploration.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.pdf", "_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  },
+  "output_dir": "docs"
+});
+});
+</script>
+
+</body>
+
+</html>

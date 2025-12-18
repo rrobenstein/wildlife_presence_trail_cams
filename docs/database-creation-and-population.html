@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Database creation and population | Wildlife Presence Using Trail Cameras</title>
+  <meta name="description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Database creation and population | Wildlife Presence Using Trail Cameras" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
+  <meta name="github-repo" content="rrobenstein.github.io/wildlife_presence_trail_cams" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Database creation and population | Wildlife Presence Using Trail Cameras" />
+  
+  <meta name="twitter:description" content="This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures." />
+  
+
+<meta name="author" content="Riley Robenstein" />
+
+
+<meta name="date" content="2025-12-08" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="data-exploration.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="open_sans.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Remote sensing and wildlife</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#snapshot-usa"><i class="fa fa-check"></i><b>1.1</b> SNAPSHOT USA</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#study-area"><i class="fa fa-check"></i><b>1.2</b> Study area</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#data-description"><i class="fa fa-check"></i><b>1.3</b> Data description</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.4</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html"><i class="fa fa-check"></i><b>2</b> Database creation and population</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#load-packages-and-create-and-connect-to-database"><i class="fa fa-check"></i><b>2.1</b> Load packages and create and connect to database</a></li>
+<li class="chapter" data-level="2.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#project"><i class="fa fa-check"></i><b>2.2</b> <strong>PROJECT_NAME</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-project_name-table"><i class="fa fa-check"></i><b>2.2.1</b> Create <strong>project_name</strong> table</a></li>
+<li class="chapter" data-level="2.2.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-project_name-table"><i class="fa fa-check"></i><b>2.2.2</b> Populate <strong>project_name</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#array"><i class="fa fa-check"></i><b>2.3</b> <strong>CAMERA_ARRAY</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-camera_array-table"><i class="fa fa-check"></i><b>2.3.1</b> Create <strong>camera_array</strong> table</a></li>
+<li class="chapter" data-level="2.3.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-camera_array-table"><i class="fa fa-check"></i><b>2.3.2</b> Populate <strong>camera_array</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#site"><i class="fa fa-check"></i><b>2.4</b> <strong>SITE_NAME</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-site_name-table"><i class="fa fa-check"></i><b>2.4.1</b> Create <strong>site_name</strong> table</a></li>
+<li class="chapter" data-level="2.4.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-site_name-table"><i class="fa fa-check"></i><b>2.4.2</b> Populate <strong>site_name</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#deployment"><i class="fa fa-check"></i><b>2.5</b> <strong>DEPLOYMENT</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-deployment-table"><i class="fa fa-check"></i><b>2.5.1</b> Create <strong>deployment</strong> table</a></li>
+<li class="chapter" data-level="2.5.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-deployment-table"><i class="fa fa-check"></i><b>2.5.2</b> Populate <strong>deployment</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#sequence"><i class="fa fa-check"></i><b>2.6</b> <strong>SEQUENCE</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-sequence-table"><i class="fa fa-check"></i><b>2.6.1</b> Create <strong>sequence</strong> table</a></li>
+<li class="chapter" data-level="2.6.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-sequence-table"><i class="fa fa-check"></i><b>2.6.2</b> Populate <strong>sequence</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#detection-table"><i class="fa fa-check"></i><b>2.7</b> <strong>DETECTION</strong> table</a>
+<ul>
+<li class="chapter" data-level="2.7.1" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#create-detection-table"><i class="fa fa-check"></i><b>2.7.1</b> Create <strong>detection</strong> table</a></li>
+<li class="chapter" data-level="2.7.2" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#clean-detection-table"><i class="fa fa-check"></i><b>2.7.2</b> Clean <strong>detection</strong> table</a></li>
+<li class="chapter" data-level="2.7.3" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#populate-detection-table"><i class="fa fa-check"></i><b>2.7.3</b> Populate <strong>detection</strong> table</a></li>
+</ul></li>
+<li class="chapter" data-level="2.8" data-path="database-creation-and-population.html"><a href="database-creation-and-population.html#check-database"><i class="fa fa-check"></i><b>2.8</b> Check database</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="data-exploration.html"><a href="data-exploration.html"><i class="fa fa-check"></i><b>3</b> Data exploration</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="data-exploration.html"><a href="data-exploration.html#load-package-database-and-tables"><i class="fa fa-check"></i><b>3.1</b> Load package, database and tables</a></li>
+<li class="chapter" data-level="3.2" data-path="data-exploration.html"><a href="data-exploration.html#exploratory-summaries"><i class="fa fa-check"></i><b>3.2</b> Exploratory summaries</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="data-exploration.html"><a href="data-exploration.html#deployments-per-year"><i class="fa fa-check"></i><b>3.2.1</b> Deployments per year</a></li>
+<li class="chapter" data-level="3.2.2" data-path="data-exploration.html"><a href="data-exploration.html#arrays-with-8-cameras"><i class="fa fa-check"></i><b>3.2.2</b> Arrays with &gt; 8 cameras</a></li>
+<li class="chapter" data-level="3.2.3" data-path="data-exploration.html"><a href="data-exploration.html#sites-reused"><i class="fa fa-check"></i><b>3.2.3</b> Sites reused</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="data-exploration.html"><a href="data-exploration.html#number-of-species"><i class="fa fa-check"></i><b>3.3</b> Number of species</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="data-exploration.html"><a href="data-exploration.html#by-habitat"><i class="fa fa-check"></i><b>3.3.1</b> By habitat</a></li>
+<li class="chapter" data-level="3.3.2" data-path="data-exploration.html"><a href="data-exploration.html#by-feature-type"><i class="fa fa-check"></i><b>3.3.2</b> By feature type</a></li>
+<li class="chapter" data-level="3.3.3" data-path="data-exploration.html"><a href="data-exploration.html#by-habitat-and-feature-type"><i class="fa fa-check"></i><b>3.3.3</b> By habitat and feature type</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="data-exploration.html"><a href="data-exploration.html#number-of-detections"><i class="fa fa-check"></i><b>3.4</b> Number of detections</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="data-exploration.html"><a href="data-exploration.html#by-year"><i class="fa fa-check"></i><b>3.4.1</b> By year</a></li>
+<li class="chapter" data-level="3.4.2" data-path="data-exploration.html"><a href="data-exploration.html#by-month"><i class="fa fa-check"></i><b>3.4.2</b> By month</a></li>
+<li class="chapter" data-level="3.4.3" data-path="data-exploration.html"><a href="data-exploration.html#by-site"><i class="fa fa-check"></i><b>3.4.3</b> By site</a></li>
+<li class="chapter" data-level="3.4.4" data-path="data-exploration.html"><a href="data-exploration.html#by-site-and-month"><i class="fa fa-check"></i><b>3.4.4</b> By site and month</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="data-visualization.html"><a href="data-visualization.html"><i class="fa fa-check"></i><b>4</b> Data visualization</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="data-visualization.html"><a href="data-visualization.html#species-in-september-and-october"><i class="fa fa-check"></i><b>4.1</b> Species in September and October</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="data-visualization.html"><a href="data-visualization.html#species-detected-100-times"><i class="fa fa-check"></i><b>4.1.1</b> Species detected &gt; 100 times</a></li>
+<li class="chapter" data-level="4.1.2" data-path="data-visualization.html"><a href="data-visualization.html#carnivora-order-detections"><i class="fa fa-check"></i><b>4.1.2</b> Carnivora order detections</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="data-visualization.html"><a href="data-visualization.html#detections-across-orders"><i class="fa fa-check"></i><b>4.2</b> Detections across orders</a></li>
+<li class="chapter" data-level="4.3" data-path="data-visualization.html"><a href="data-visualization.html#detections-over-time"><i class="fa fa-check"></i><b>4.3</b> Detections over time</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="data-visualization.html"><a href="data-visualization.html#wildlife-detections-over-time"><i class="fa fa-check"></i><b>4.3.1</b> Wildlife detections over time</a></li>
+<li class="chapter" data-level="4.3.2" data-path="data-visualization.html"><a href="data-visualization.html#wildlife-and-human-domestic-detections-over-time"><i class="fa fa-check"></i><b>4.3.2</b> Wildlife and human-domestic detections over time</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Wildlife Presence Using Trail Cameras</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="database-creation-and-population" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Database creation and population<a href="database-creation-and-population.html#database-creation-and-population" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Trail camera data were distributed across six <code>.csv</code> files in the
+<strong>processed_data</strong> folder to optimize storage and data manipulation. I
+created a relational database with R and SQL to easily navigate these
+data (Figure 2). Note that the header of each box corresponds to the name of each table. The database can be reproduced with the code in sections <strong>2.1-2.8</strong>.</p>
+<div class="float">
+<img src="documents/db_structure_ssusa.jpg" alt="Figure 2. Entity relationship diagram of relational database structure." />
+<div class="figcaption">Figure 2. Entity relationship diagram of relational database
+structure.</div>
+</div>
+<div id="load-packages-and-create-and-connect-to-database" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Load packages and create and connect to database<a href="database-creation-and-population.html#load-packages-and-create-and-connect-to-database" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Load the packages <code>DBI</code> and <code>RSQLite</code> required to connect R and SQLite.
+Use <code>install.packages()</code> if the packages are not installed.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="database-creation-and-population.html#cb1-1" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb1-2"><a href="database-creation-and-population.html#cb1-2" tabindex="-1"></a><span class="fu">library</span>(RSQLite)</span></code></pre></div>
+<p>Connect to the database file. A database file will be created if the
+code has not previously been executed.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="database-creation-and-population.html#cb2-1" tabindex="-1"></a>wlf_cam_db <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="at">drv =</span> RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(),</span>
+<span id="cb2-2"><a href="database-creation-and-population.html#cb2-2" tabindex="-1"></a>                       <span class="st">&quot;../../database/wlf_cam.db&quot;</span>)</span></code></pre></div>
+</div>
+<div id="project" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> <strong>PROJECT_NAME</strong> table<a href="database-creation-and-population.html#project" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <strong>project_name</strong> table includes the following variables: project_id
+(<strong>primary key</strong>), project_name, and year, where project_id is a unique
+identifier for each unique project by year, project name is the
+respective project name, and year is the year data were captured.</p>
+<div id="create-project_name-table" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Create <strong>project_name</strong> table<a href="database-creation-and-population.html#create-project_name-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Create the table in SQLite.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="database-creation-and-population.html#cb3-1" tabindex="-1"></a><span class="fu">dbExecute</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb3-2"><a href="database-creation-and-population.html#cb3-2" tabindex="-1"></a>          <span class="at">statement =</span> <span class="st">&quot;CREATE TABLE project_name (</span></span>
+<span id="cb3-3"><a href="database-creation-and-population.html#cb3-3" tabindex="-1"></a><span class="st">          project_id varchar(10) PRIMARY KEY NOT NULL UNIQUE,</span></span>
+<span id="cb3-4"><a href="database-creation-and-population.html#cb3-4" tabindex="-1"></a><span class="st">          project_name varchar(35),</span></span>
+<span id="cb3-5"><a href="database-creation-and-population.html#cb3-5" tabindex="-1"></a><span class="st">          year numeric(4) CHECK (year IN </span></span>
+<span id="cb3-6"><a href="database-creation-and-population.html#cb3-6" tabindex="-1"></a><span class="st">                                          (&#39;2019&#39;,</span></span>
+<span id="cb3-7"><a href="database-creation-and-population.html#cb3-7" tabindex="-1"></a><span class="st">                                          &#39;2020&#39;,</span></span>
+<span id="cb3-8"><a href="database-creation-and-population.html#cb3-8" tabindex="-1"></a><span class="st">                                          &#39;2021&#39;,</span></span>
+<span id="cb3-9"><a href="database-creation-and-population.html#cb3-9" tabindex="-1"></a><span class="st">                                          &#39;2022&#39;,</span></span>
+<span id="cb3-10"><a href="database-creation-and-population.html#cb3-10" tabindex="-1"></a><span class="st">                                          &#39;2023&#39;))</span></span>
+<span id="cb3-11"><a href="database-creation-and-population.html#cb3-11" tabindex="-1"></a><span class="st">          );&quot;</span>)</span></code></pre></div>
+</div>
+<div id="populate-project_name-table" class="section level3 hasAnchor" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Populate <strong>project_name</strong> table<a href="database-creation-and-population.html#populate-project_name-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Populate this database table with the <code>.csv</code> file after checking the
+column names correspond.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="database-creation-and-population.html#cb4-1" tabindex="-1"></a><span class="co"># Read in project_name.csv file</span></span>
+<span id="cb4-2"><a href="database-creation-and-population.html#cb4-2" tabindex="-1"></a>project_name_csv <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../../processed_data/project_name.csv&quot;</span>)</span>
+<span id="cb4-3"><a href="database-creation-and-population.html#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="database-creation-and-population.html#cb4-4" tabindex="-1"></a><span class="co"># Get .csv column names</span></span>
+<span id="cb4-5"><a href="database-creation-and-population.html#cb4-5" tabindex="-1"></a><span class="fu">colnames</span>(project_name_csv)</span>
+<span id="cb4-6"><a href="database-creation-and-population.html#cb4-6" tabindex="-1"></a><span class="co"># Get database field names </span></span>
+<span id="cb4-7"><a href="database-creation-and-population.html#cb4-7" tabindex="-1"></a><span class="fu">dbListFields</span>(wlf_cam_db, <span class="st">&quot;project_name&quot;</span>)</span>
+<span id="cb4-8"><a href="database-creation-and-population.html#cb4-8" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="database-creation-and-population.html#cb4-9" tabindex="-1"></a><span class="co"># Append .csv into SQLite table</span></span>
+<span id="cb4-10"><a href="database-creation-and-population.html#cb4-10" tabindex="-1"></a><span class="fu">dbWriteTable</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb4-11"><a href="database-creation-and-population.html#cb4-11" tabindex="-1"></a>             <span class="at">name =</span> <span class="st">&quot;project_name&quot;</span>,</span>
+<span id="cb4-12"><a href="database-creation-and-population.html#cb4-12" tabindex="-1"></a>             <span class="at">value =</span> project_name_csv,</span>
+<span id="cb4-13"><a href="database-creation-and-population.html#cb4-13" tabindex="-1"></a>             <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="array" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> <strong>CAMERA_ARRAY</strong> table<a href="database-creation-and-population.html#array" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <strong>camera_array</strong> table includes the following variables: array_name
+(<strong>primary key</strong>), state, years_surveyed, ecoregion, array_lat, and
+array_long, where array_name is a unique identifier for each camera trap
+array, state is the US state where the array was located, years_surveyed
+is the number of years an array has image sequence data from, ecoregion
+is based on Bailey’s ecoregions (Bailey 2016 as cited in Rooney et al.
+2025) and array_lat and array_long are the approximate latitude and
+longitude coordinates (decimal degrees WGS 84) for the respective array
+array.</p>
+<div id="create-camera_array-table" class="section level3 hasAnchor" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> Create <strong>camera_array</strong> table<a href="database-creation-and-population.html#create-camera_array-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Create the table in SQLite.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="database-creation-and-population.html#cb5-1" tabindex="-1"></a><span class="fu">dbExecute</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb5-2"><a href="database-creation-and-population.html#cb5-2" tabindex="-1"></a>          <span class="at">statement =</span> <span class="st">&quot;CREATE TABLE camera_array (</span></span>
+<span id="cb5-3"><a href="database-creation-and-population.html#cb5-3" tabindex="-1"></a><span class="st">          array_name varchar(20) PRIMARY KEY NOT NULL UNIQUE,</span></span>
+<span id="cb5-4"><a href="database-creation-and-population.html#cb5-4" tabindex="-1"></a><span class="st">          state varchar(2),</span></span>
+<span id="cb5-5"><a href="database-creation-and-population.html#cb5-5" tabindex="-1"></a><span class="st">          years_surveyed numeric(1),</span></span>
+<span id="cb5-6"><a href="database-creation-and-population.html#cb5-6" tabindex="-1"></a><span class="st">          ecoregion varchar(20),</span></span>
+<span id="cb5-7"><a href="database-creation-and-population.html#cb5-7" tabindex="-1"></a><span class="st">          array_lat numeric(10, 10),</span></span>
+<span id="cb5-8"><a href="database-creation-and-population.html#cb5-8" tabindex="-1"></a><span class="st">          array_long numeric(10, 10)</span></span>
+<span id="cb5-9"><a href="database-creation-and-population.html#cb5-9" tabindex="-1"></a><span class="st">          );&quot;</span>)</span></code></pre></div>
+</div>
+<div id="populate-camera_array-table" class="section level3 hasAnchor" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> Populate <strong>camera_array</strong> table<a href="database-creation-and-population.html#populate-camera_array-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Populate this database table with the <code>.csv</code> file after checking the
+column names correspond.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="database-creation-and-population.html#cb6-1" tabindex="-1"></a><span class="co"># Read in camera_array.csv file</span></span>
+<span id="cb6-2"><a href="database-creation-and-population.html#cb6-2" tabindex="-1"></a>camera_array_csv <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../../processed_data/camera_array.csv&quot;</span>)</span>
+<span id="cb6-3"><a href="database-creation-and-population.html#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="database-creation-and-population.html#cb6-4" tabindex="-1"></a><span class="co"># Get .csv column names</span></span>
+<span id="cb6-5"><a href="database-creation-and-population.html#cb6-5" tabindex="-1"></a><span class="fu">colnames</span>(camera_array_csv)</span>
+<span id="cb6-6"><a href="database-creation-and-population.html#cb6-6" tabindex="-1"></a><span class="co"># Get database field names</span></span>
+<span id="cb6-7"><a href="database-creation-and-population.html#cb6-7" tabindex="-1"></a><span class="fu">dbListFields</span>(wlf_cam_db, <span class="st">&quot;camera_array&quot;</span>)</span>
+<span id="cb6-8"><a href="database-creation-and-population.html#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="database-creation-and-population.html#cb6-9" tabindex="-1"></a><span class="co"># Append .csv into SQLite table</span></span>
+<span id="cb6-10"><a href="database-creation-and-population.html#cb6-10" tabindex="-1"></a><span class="fu">dbWriteTable</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb6-11"><a href="database-creation-and-population.html#cb6-11" tabindex="-1"></a>             <span class="at">name =</span> <span class="st">&quot;camera_array&quot;</span>,</span>
+<span id="cb6-12"><a href="database-creation-and-population.html#cb6-12" tabindex="-1"></a>             <span class="at">value =</span> camera_array_csv,</span>
+<span id="cb6-13"><a href="database-creation-and-population.html#cb6-13" tabindex="-1"></a>             <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="site" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> <strong>SITE_NAME</strong> table<a href="database-creation-and-population.html#site" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <strong>site_name</strong> table includes the following variables: site_id
+(<strong>primary key</strong>), array_name (<em>foreign key</em>), and development_level,
+where site_id is a unique identifier for each site, array_name
+corresponds to the array_name in <a href="database-creation-and-population.html#array">camera_array</a>, and
+development_level is classified as wild, rural, suburban, or urban.</p>
+<div id="create-site_name-table" class="section level3 hasAnchor" number="2.4.1">
+<h3><span class="header-section-number">2.4.1</span> Create <strong>site_name</strong> table<a href="database-creation-and-population.html#create-site_name-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Create the table in SQLite.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="database-creation-and-population.html#cb7-1" tabindex="-1"></a><span class="fu">dbExecute</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb7-2"><a href="database-creation-and-population.html#cb7-2" tabindex="-1"></a>          <span class="at">statement =</span> <span class="st">&quot;CREATE TABLE site_name (</span></span>
+<span id="cb7-3"><a href="database-creation-and-population.html#cb7-3" tabindex="-1"></a><span class="st">          site_id varchar(50) PRIMARY KEY NOT NULL UNIQUE,</span></span>
+<span id="cb7-4"><a href="database-creation-and-population.html#cb7-4" tabindex="-1"></a><span class="st">          array_name  varchar(50),</span></span>
+<span id="cb7-5"><a href="database-creation-and-population.html#cb7-5" tabindex="-1"></a><span class="st">          development_level varchar(10) CHECK (development_level IN </span></span>
+<span id="cb7-6"><a href="database-creation-and-population.html#cb7-6" tabindex="-1"></a><span class="st">                                                                (&#39;Wild&#39;,</span></span>
+<span id="cb7-7"><a href="database-creation-and-population.html#cb7-7" tabindex="-1"></a><span class="st">                                                                &#39;Rural&#39;,</span></span>
+<span id="cb7-8"><a href="database-creation-and-population.html#cb7-8" tabindex="-1"></a><span class="st">                                                                &#39;Urban&#39;,</span></span>
+<span id="cb7-9"><a href="database-creation-and-population.html#cb7-9" tabindex="-1"></a><span class="st">                                                                &#39;Suburban&#39;)),</span></span>
+<span id="cb7-10"><a href="database-creation-and-population.html#cb7-10" tabindex="-1"></a><span class="st">          FOREIGN KEY (array_name) REFERENCES camera_array(array_name)</span></span>
+<span id="cb7-11"><a href="database-creation-and-population.html#cb7-11" tabindex="-1"></a><span class="st">          );&quot;</span>)</span></code></pre></div>
+</div>
+<div id="populate-site_name-table" class="section level3 hasAnchor" number="2.4.2">
+<h3><span class="header-section-number">2.4.2</span> Populate <strong>site_name</strong> table<a href="database-creation-and-population.html#populate-site_name-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Populate this database table with the <code>.csv</code> file after checking the
+column names correspond.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="database-creation-and-population.html#cb8-1" tabindex="-1"></a><span class="co"># Read in site_name.csv file</span></span>
+<span id="cb8-2"><a href="database-creation-and-population.html#cb8-2" tabindex="-1"></a>site_name_csv <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../../processed_data/site_name.csv&quot;</span>)</span>
+<span id="cb8-3"><a href="database-creation-and-population.html#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="database-creation-and-population.html#cb8-4" tabindex="-1"></a><span class="co"># Get .csv column names</span></span>
+<span id="cb8-5"><a href="database-creation-and-population.html#cb8-5" tabindex="-1"></a><span class="fu">colnames</span>(site_name_csv)</span>
+<span id="cb8-6"><a href="database-creation-and-population.html#cb8-6" tabindex="-1"></a><span class="co"># Get database field names </span></span>
+<span id="cb8-7"><a href="database-creation-and-population.html#cb8-7" tabindex="-1"></a><span class="fu">dbListFields</span>(wlf_cam_db, <span class="st">&quot;site_name&quot;</span>)</span>
+<span id="cb8-8"><a href="database-creation-and-population.html#cb8-8" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="database-creation-and-population.html#cb8-9" tabindex="-1"></a><span class="co"># Append .csv into SQLite table</span></span>
+<span id="cb8-10"><a href="database-creation-and-population.html#cb8-10" tabindex="-1"></a><span class="fu">dbWriteTable</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb8-11"><a href="database-creation-and-population.html#cb8-11" tabindex="-1"></a>             <span class="at">name =</span> <span class="st">&quot;site_name&quot;</span>,</span>
+<span id="cb8-12"><a href="database-creation-and-population.html#cb8-12" tabindex="-1"></a>             <span class="at">value =</span> site_name_csv,</span>
+<span id="cb8-13"><a href="database-creation-and-population.html#cb8-13" tabindex="-1"></a>             <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="deployment" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> <strong>DEPLOYMENT</strong> table<a href="database-creation-and-population.html#deployment" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <strong>deployment</strong> table includes the following variables: deployment_id
+(<strong>primary key</strong>), site_id (<em>foreign key</em>), project_id (<em>foreign key</em>).
+start_date, end_date, survey_nights, latitude, longitude, habitat, and
+feature type, where deployment_id is a unique identifier for each camera
+deployment, site_id corresponds to the site_id in <a href="database-creation-and-population.html#site">site_name</a>,
+project_id corresponds to the project_id in <a href="database-creation-and-population.html#project">project_name</a>,
+start_date is the date (<em>YYYY-MM-DD</em>) when the camera was deployed,
+end_date is the date (<em>YYYY-MM-DD</em>) when the camera was retrieved,
+survey_nights is number of nights the camera was at the site, latitude
+and longitude are geographic coordinates (decimal degrees WGS 84)
+between 21.3558 to 59.4526 and -157.7496 to -68.6116, respectively,
+habitat is classified as forest, grassland, or anthropogenic, and
+feature type indicates potential features at the camera’s deployment
+site.</p>
+<div id="create-deployment-table" class="section level3 hasAnchor" number="2.5.1">
+<h3><span class="header-section-number">2.5.1</span> Create <strong>deployment</strong> table<a href="database-creation-and-population.html#create-deployment-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Create the table in SQLite.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="database-creation-and-population.html#cb9-1" tabindex="-1"></a><span class="fu">dbExecute</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb9-2"><a href="database-creation-and-population.html#cb9-2" tabindex="-1"></a>          <span class="at">statement =</span> <span class="st">&quot;CREATE TABLE deployment (</span></span>
+<span id="cb9-3"><a href="database-creation-and-population.html#cb9-3" tabindex="-1"></a><span class="st">          deployment_id varchar(60) PRIMARY KEY NOT NULL UNIQUE,</span></span>
+<span id="cb9-4"><a href="database-creation-and-population.html#cb9-4" tabindex="-1"></a><span class="st">          site_id varchar(50),</span></span>
+<span id="cb9-5"><a href="database-creation-and-population.html#cb9-5" tabindex="-1"></a><span class="st">          project_id varchar(10),</span></span>
+<span id="cb9-6"><a href="database-creation-and-population.html#cb9-6" tabindex="-1"></a><span class="st">          start_date text,</span></span>
+<span id="cb9-7"><a href="database-creation-and-population.html#cb9-7" tabindex="-1"></a><span class="st">          end_date text,</span></span>
+<span id="cb9-8"><a href="database-creation-and-population.html#cb9-8" tabindex="-1"></a><span class="st">          survey_nights numeric (3),</span></span>
+<span id="cb9-9"><a href="database-creation-and-population.html#cb9-9" tabindex="-1"></a><span class="st">          latitude numeric(10, 10),</span></span>
+<span id="cb9-10"><a href="database-creation-and-population.html#cb9-10" tabindex="-1"></a><span class="st">          longitude numeric(10, 10),</span></span>
+<span id="cb9-11"><a href="database-creation-and-population.html#cb9-11" tabindex="-1"></a><span class="st">          habitat varchar(15),</span></span>
+<span id="cb9-12"><a href="database-creation-and-population.html#cb9-12" tabindex="-1"></a><span class="st">          feature_type varchar(15),</span></span>
+<span id="cb9-13"><a href="database-creation-and-population.html#cb9-13" tabindex="-1"></a><span class="st">          FOREIGN KEY (site_id) REFERENCES site_name(site_id)</span></span>
+<span id="cb9-14"><a href="database-creation-and-population.html#cb9-14" tabindex="-1"></a><span class="st">          FOREIGN KEY (project_id) REFERENCES project_name(project_id)</span></span>
+<span id="cb9-15"><a href="database-creation-and-population.html#cb9-15" tabindex="-1"></a><span class="st">          );&quot;</span>)</span></code></pre></div>
+</div>
+<div id="populate-deployment-table" class="section level3 hasAnchor" number="2.5.2">
+<h3><span class="header-section-number">2.5.2</span> Populate <strong>deployment</strong> table<a href="database-creation-and-population.html#populate-deployment-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Populate this database table with the <code>.csv</code> file after checking the
+column names correspond.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="database-creation-and-population.html#cb10-1" tabindex="-1"></a><span class="co"># Read in deployment.csv file</span></span>
+<span id="cb10-2"><a href="database-creation-and-population.html#cb10-2" tabindex="-1"></a>deployment_csv <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../../processed_data/deployment.csv&quot;</span>)</span>
+<span id="cb10-3"><a href="database-creation-and-population.html#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="database-creation-and-population.html#cb10-4" tabindex="-1"></a><span class="co"># Get .csv column names</span></span>
+<span id="cb10-5"><a href="database-creation-and-population.html#cb10-5" tabindex="-1"></a><span class="fu">colnames</span>(deployment_csv)</span>
+<span id="cb10-6"><a href="database-creation-and-population.html#cb10-6" tabindex="-1"></a><span class="co"># Get database field names </span></span>
+<span id="cb10-7"><a href="database-creation-and-population.html#cb10-7" tabindex="-1"></a><span class="fu">dbListFields</span>(wlf_cam_db, <span class="st">&quot;deployment&quot;</span>)</span></code></pre></div>
+<p>Before populating the table, note the discrepancy in names of variables.</p>
+<pre><code>##  [1] &quot;deployment_id&quot; &quot;site_id&quot;       &quot;project_id&quot;    &quot;lat&quot;          
+##  [5] &quot;long&quot;          &quot;start&quot;         &quot;end&quot;           &quot;survey_nights&quot;
+##  [9] &quot;habitat&quot;       &quot;feature_type&quot;</code></pre>
+<pre><code>##  [1] &quot;deployment_id&quot; &quot;site_id&quot;       &quot;project_id&quot;    &quot;start_date&quot;   
+##  [5] &quot;end_date&quot;      &quot;survey_nights&quot; &quot;latitude&quot;      &quot;longitude&quot;    
+##  [9] &quot;habitat&quot;       &quot;feature_type&quot;</code></pre>
+<p>Edit the <code>.csv</code> column names to fit those of the database first.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="database-creation-and-population.html#cb13-1" tabindex="-1"></a><span class="co"># Edit .csv column names</span></span>
+<span id="cb13-2"><a href="database-creation-and-population.html#cb13-2" tabindex="-1"></a><span class="fu">colnames</span>(deployment_csv) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;deployment_id&quot;</span>, <span class="st">&quot;site_id&quot;</span>,</span>
+<span id="cb13-3"><a href="database-creation-and-population.html#cb13-3" tabindex="-1"></a>                              <span class="st">&quot;project_id&quot;</span>, <span class="st">&quot;latitude&quot;</span>,</span>
+<span id="cb13-4"><a href="database-creation-and-population.html#cb13-4" tabindex="-1"></a>                              <span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;start_date&quot;</span>,</span>
+<span id="cb13-5"><a href="database-creation-and-population.html#cb13-5" tabindex="-1"></a>                              <span class="st">&quot;end_date&quot;</span>, <span class="st">&quot;survey_nights&quot;</span>,</span>
+<span id="cb13-6"><a href="database-creation-and-population.html#cb13-6" tabindex="-1"></a>                              <span class="st">&quot;habitat&quot;</span>, <span class="st">&quot;feature_type&quot;</span>)</span>
+<span id="cb13-7"><a href="database-creation-and-population.html#cb13-7" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="database-creation-and-population.html#cb13-8" tabindex="-1"></a><span class="co"># Check .csv column names again</span></span>
+<span id="cb13-9"><a href="database-creation-and-population.html#cb13-9" tabindex="-1"></a><span class="fu">colnames</span>(deployment_csv)</span></code></pre></div>
+<pre><code>##  [1] &quot;deployment_id&quot; &quot;site_id&quot;       &quot;project_id&quot;    &quot;latitude&quot;     
+##  [5] &quot;longitude&quot;     &quot;start_date&quot;    &quot;end_date&quot;      &quot;survey_nights&quot;
+##  [9] &quot;habitat&quot;       &quot;feature_type&quot;</code></pre>
+<p>Now that the column names match, populate the deployment table.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="database-creation-and-population.html#cb15-1" tabindex="-1"></a><span class="co"># Append .csv into SQLite table</span></span>
+<span id="cb15-2"><a href="database-creation-and-population.html#cb15-2" tabindex="-1"></a><span class="fu">dbWriteTable</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb15-3"><a href="database-creation-and-population.html#cb15-3" tabindex="-1"></a>             <span class="at">name =</span> <span class="st">&quot;deployment&quot;</span>,</span>
+<span id="cb15-4"><a href="database-creation-and-population.html#cb15-4" tabindex="-1"></a>             <span class="at">value =</span> deployment_csv,</span>
+<span id="cb15-5"><a href="database-creation-and-population.html#cb15-5" tabindex="-1"></a>             <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="sequence" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> <strong>SEQUENCE</strong> table<a href="database-creation-and-population.html#sequence" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <strong>sequence</strong> table includes the following variables: sequence_id
+(<strong>primary key</strong>), deployment_id (<em>foreign key</em>), start_time, and
+end_time, where sequence_id is a unique identifier for each photo
+sequence captured within one minute of a camera trigger, deployment_id
+corresponds to the deployment_id in <a href="database-creation-and-population.html#deployment">deployment</a>,
+start_time is the beginning of the one-minute photo sequence, and
+end_time is the end of the one-minute photo sequence.</p>
+<div id="create-sequence-table" class="section level3 hasAnchor" number="2.6.1">
+<h3><span class="header-section-number">2.6.1</span> Create <strong>sequence</strong> table<a href="database-creation-and-population.html#create-sequence-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Create the table in SQLite.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="database-creation-and-population.html#cb16-1" tabindex="-1"></a><span class="fu">dbExecute</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb16-2"><a href="database-creation-and-population.html#cb16-2" tabindex="-1"></a>          <span class="at">statement =</span> <span class="st">&quot;CREATE TABLE sequence (</span></span>
+<span id="cb16-3"><a href="database-creation-and-population.html#cb16-3" tabindex="-1"></a><span class="st">          sequence_id varchar(15) PRIMARY KEY NOT NULL UNIQUE,</span></span>
+<span id="cb16-4"><a href="database-creation-and-population.html#cb16-4" tabindex="-1"></a><span class="st">          deployment_id varchar(60),</span></span>
+<span id="cb16-5"><a href="database-creation-and-population.html#cb16-5" tabindex="-1"></a><span class="st">          start_time text,</span></span>
+<span id="cb16-6"><a href="database-creation-and-population.html#cb16-6" tabindex="-1"></a><span class="st">          end_time text,</span></span>
+<span id="cb16-7"><a href="database-creation-and-population.html#cb16-7" tabindex="-1"></a><span class="st">          FOREIGN KEY (deployment_id) REFERENCES deployment(deployment_id)</span></span>
+<span id="cb16-8"><a href="database-creation-and-population.html#cb16-8" tabindex="-1"></a><span class="st">          );&quot;</span>)</span></code></pre></div>
+</div>
+<div id="populate-sequence-table" class="section level3 hasAnchor" number="2.6.2">
+<h3><span class="header-section-number">2.6.2</span> Populate <strong>sequence</strong> table<a href="database-creation-and-population.html#populate-sequence-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Populate this database table with the <code>.csv</code> file after checking the
+column names correspond.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="database-creation-and-population.html#cb17-1" tabindex="-1"></a><span class="co"># Read in sequence.csv file</span></span>
+<span id="cb17-2"><a href="database-creation-and-population.html#cb17-2" tabindex="-1"></a>sequence_csv <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../../processed_data/sequence.csv&quot;</span>)</span>
+<span id="cb17-3"><a href="database-creation-and-population.html#cb17-3" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="database-creation-and-population.html#cb17-4" tabindex="-1"></a><span class="co"># Get .csv column names</span></span>
+<span id="cb17-5"><a href="database-creation-and-population.html#cb17-5" tabindex="-1"></a><span class="fu">colnames</span>(sequence_csv)</span>
+<span id="cb17-6"><a href="database-creation-and-population.html#cb17-6" tabindex="-1"></a><span class="co"># Get database field names </span></span>
+<span id="cb17-7"><a href="database-creation-and-population.html#cb17-7" tabindex="-1"></a><span class="fu">dbListFields</span>(wlf_cam_db, <span class="st">&quot;sequence&quot;</span>)</span>
+<span id="cb17-8"><a href="database-creation-and-population.html#cb17-8" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="database-creation-and-population.html#cb17-9" tabindex="-1"></a><span class="co"># Append .csv into SQLite table</span></span>
+<span id="cb17-10"><a href="database-creation-and-population.html#cb17-10" tabindex="-1"></a><span class="fu">dbWriteTable</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb17-11"><a href="database-creation-and-population.html#cb17-11" tabindex="-1"></a>             <span class="at">name =</span> <span class="st">&quot;sequence&quot;</span>,</span>
+<span id="cb17-12"><a href="database-creation-and-population.html#cb17-12" tabindex="-1"></a>             <span class="at">value =</span> sequence_csv,</span>
+<span id="cb17-13"><a href="database-creation-and-population.html#cb17-13" tabindex="-1"></a>             <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="detection-table" class="section level2 hasAnchor" number="2.7">
+<h2><span class="header-section-number">2.7</span> <strong>DETECTION</strong> table<a href="database-creation-and-population.html#detection-table" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <strong>detection</strong> table includes the following variables: detection_id
+(<strong>primary key</strong>), sequence_id (<em>foreign key</em>), class, order, family,
+genus, species, common_name, age, sex, and group_number, where
+detection_id is a unique identifier for each wildlife detection,
+sequence_id corresponds to the sequence_id in <a href="database-creation-and-population.html#sequence">sequence</a>,
+class is the taxonomic class identified for the wildlife detection,
+order is the taxonomic order identified for the wildlife detection,
+family is the taxonomic family identified for the wildlife detection,
+genus is the taxonomic genus identified for the wildlife detection,
+species is the taxonomic species identified for the wildlife detection,
+common_name is the common name identified for the wildlife detection,
+age is classified as juvenile or adult, sex is classified as male or
+female, and group_number is the number of individuals in the image
+sequence with that respective taxonomic identification.</p>
+<div id="create-detection-table" class="section level3 hasAnchor" number="2.7.1">
+<h3><span class="header-section-number">2.7.1</span> Create <strong>detection</strong> table<a href="database-creation-and-population.html#create-detection-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Create the table in SQLite.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="database-creation-and-population.html#cb18-1" tabindex="-1"></a><span class="fu">dbExecute</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb18-2"><a href="database-creation-and-population.html#cb18-2" tabindex="-1"></a>          <span class="at">statement =</span> <span class="st">&quot;CREATE TABLE detection (</span></span>
+<span id="cb18-3"><a href="database-creation-and-population.html#cb18-3" tabindex="-1"></a><span class="st">          detection_id varchar(15) PRIMARY KEY NOT NULL UNIQUE,</span></span>
+<span id="cb18-4"><a href="database-creation-and-population.html#cb18-4" tabindex="-1"></a><span class="st">          sequence_id varchar(15),</span></span>
+<span id="cb18-5"><a href="database-creation-and-population.html#cb18-5" tabindex="-1"></a><span class="st">          class varchar(15),</span></span>
+<span id="cb18-6"><a href="database-creation-and-population.html#cb18-6" tabindex="-1"></a><span class="st">          &#39;order&#39; varchar(20),</span></span>
+<span id="cb18-7"><a href="database-creation-and-population.html#cb18-7" tabindex="-1"></a><span class="st">          family varchar(20),</span></span>
+<span id="cb18-8"><a href="database-creation-and-population.html#cb18-8" tabindex="-1"></a><span class="st">          genus varchar (15),</span></span>
+<span id="cb18-9"><a href="database-creation-and-population.html#cb18-9" tabindex="-1"></a><span class="st">          species varchar(15),</span></span>
+<span id="cb18-10"><a href="database-creation-and-population.html#cb18-10" tabindex="-1"></a><span class="st">          common_name varchar(30),</span></span>
+<span id="cb18-11"><a href="database-creation-and-population.html#cb18-11" tabindex="-1"></a><span class="st">          age varchar(10),</span></span>
+<span id="cb18-12"><a href="database-creation-and-population.html#cb18-12" tabindex="-1"></a><span class="st">          sex varchar(10),</span></span>
+<span id="cb18-13"><a href="database-creation-and-population.html#cb18-13" tabindex="-1"></a><span class="st">          group_number numeric(2),</span></span>
+<span id="cb18-14"><a href="database-creation-and-population.html#cb18-14" tabindex="-1"></a><span class="st">          FOREIGN KEY (sequence_id) REFERENCES sequence(sequence_id)</span></span>
+<span id="cb18-15"><a href="database-creation-and-population.html#cb18-15" tabindex="-1"></a><span class="st">          );&quot;</span>)</span></code></pre></div>
+</div>
+<div id="clean-detection-table" class="section level3 hasAnchor" number="2.7.2">
+<h3><span class="header-section-number">2.7.2</span> Clean <strong>detection</strong> table<a href="database-creation-and-population.html#clean-detection-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The detection <code>.csv</code> file has missing values and formatting is
+inconsistent. To ensure they are compatible with <code>SQLite</code> and <code>R</code>, load
+the <code>.csv</code> file and convert all missing values to ‘NA’. Make formatting
+consistent for the variables <em>age</em> and <em>sex</em>.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="database-creation-and-population.html#cb19-1" tabindex="-1"></a><span class="co"># Read in detection.csv file</span></span>
+<span id="cb19-2"><a href="database-creation-and-population.html#cb19-2" tabindex="-1"></a>detection_csv <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../../processed_data/detection.csv&quot;</span>)</span>
+<span id="cb19-3"><a href="database-creation-and-population.html#cb19-3" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="database-creation-and-population.html#cb19-4" tabindex="-1"></a><span class="co"># Convert &#39; &#39; or &#39;Unknown&#39; values to blank (&#39;&#39;)</span></span>
+<span id="cb19-5"><a href="database-creation-and-population.html#cb19-5" tabindex="-1"></a>detection_csv[detection_csv <span class="sc">==</span> <span class="st">&quot; &quot;</span> <span class="sc">|</span> detection_csv <span class="sc">==</span> <span class="st">&quot;Unknown&quot;</span> <span class="sc">|</span> detection_csv <span class="sc">==</span> <span class="st">&quot;unknown&quot;</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb19-6"><a href="database-creation-and-population.html#cb19-6" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="database-creation-and-population.html#cb19-7" tabindex="-1"></a><span class="co"># Make formatting consistent</span></span>
+<span id="cb19-8"><a href="database-creation-and-population.html#cb19-8" tabindex="-1"></a>detection_csv<span class="sc">$</span>age[detection_csv<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;adult&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Adult&quot;</span></span>
+<span id="cb19-9"><a href="database-creation-and-population.html#cb19-9" tabindex="-1"></a>detection_csv<span class="sc">$</span>age[detection_csv<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;juvenile&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Juvenile&quot;</span></span>
+<span id="cb19-10"><a href="database-creation-and-population.html#cb19-10" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="database-creation-and-population.html#cb19-11" tabindex="-1"></a>detection_csv<span class="sc">$</span>sex[detection_csv<span class="sc">$</span>sex <span class="sc">==</span> <span class="st">&quot;male&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Male&quot;</span></span>
+<span id="cb19-12"><a href="database-creation-and-population.html#cb19-12" tabindex="-1"></a>detection_csv<span class="sc">$</span>sex[detection_csv<span class="sc">$</span>sex <span class="sc">==</span> <span class="st">&quot;female&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Female&quot;</span></span></code></pre></div>
+</div>
+<div id="populate-detection-table" class="section level3 hasAnchor" number="2.7.3">
+<h3><span class="header-section-number">2.7.3</span> Populate <strong>detection</strong> table<a href="database-creation-and-population.html#populate-detection-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Populate this database table with the <code>.csv</code> file after checking the
+column names correspond.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="database-creation-and-population.html#cb20-1" tabindex="-1"></a><span class="co"># Get .csv column names</span></span>
+<span id="cb20-2"><a href="database-creation-and-population.html#cb20-2" tabindex="-1"></a><span class="fu">colnames</span>(detection_csv)</span>
+<span id="cb20-3"><a href="database-creation-and-population.html#cb20-3" tabindex="-1"></a><span class="co"># Get database field names </span></span>
+<span id="cb20-4"><a href="database-creation-and-population.html#cb20-4" tabindex="-1"></a><span class="fu">dbListFields</span>(wlf_cam_db, <span class="st">&quot;detection&quot;</span>)</span>
+<span id="cb20-5"><a href="database-creation-and-population.html#cb20-5" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="database-creation-and-population.html#cb20-6" tabindex="-1"></a><span class="co"># Append .csv into SQLite table</span></span>
+<span id="cb20-7"><a href="database-creation-and-population.html#cb20-7" tabindex="-1"></a><span class="fu">dbWriteTable</span>(<span class="at">conn =</span> wlf_cam_db,</span>
+<span id="cb20-8"><a href="database-creation-and-population.html#cb20-8" tabindex="-1"></a>             <span class="at">name =</span> <span class="st">&quot;detection&quot;</span>,</span>
+<span id="cb20-9"><a href="database-creation-and-population.html#cb20-9" tabindex="-1"></a>             <span class="at">value =</span> detection_csv,</span>
+<span id="cb20-10"><a href="database-creation-and-population.html#cb20-10" tabindex="-1"></a>             <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="check-database" class="section level2 hasAnchor" number="2.8">
+<h2><span class="header-section-number">2.8</span> Check database<a href="database-creation-and-population.html#check-database" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Run the following code to ensure the data were loaded into the tables
+properly.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="database-creation-and-population.html#cb21-1" tabindex="-1"></a><span class="co"># List table names</span></span>
+<span id="cb21-2"><a href="database-creation-and-population.html#cb21-2" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="database-creation-and-population.html#cb21-3" tabindex="-1"></a><span class="fu">dbListTables</span>(wlf_cam_db)</span></code></pre></div>
+<pre><code>## [1] &quot;camera_array&quot; &quot;deployment&quot;   &quot;detection&quot;    &quot;project_name&quot; &quot;sequence&quot;    
+## [6] &quot;site_name&quot;</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="database-creation-and-population.html#cb23-1" tabindex="-1"></a><span class="co"># project_name table</span></span>
+<span id="cb23-2"><a href="database-creation-and-population.html#cb23-2" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="database-creation-and-population.html#cb23-3" tabindex="-1"></a><span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM project_name</span></span>
+<span id="cb23-4"><a href="database-creation-and-population.html#cb23-4" tabindex="-1"></a><span class="st">                        LIMIT 5;&quot;</span>)</span></code></pre></div>
+<pre><code>##   project_id      project_name year
+## 1    ssusa19 Snapshot USA 2019 2019
+## 2    ssusa20 Snapshot USA 2020 2020
+## 3    ssusa21 Snapshot USA 2021 2021
+## 4    ssusa22 Snapshot USA 2022 2022
+## 5    ssusa23 Snapshot USA 2023 2023</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="database-creation-and-population.html#cb25-1" tabindex="-1"></a><span class="co"># camera_array table</span></span>
+<span id="cb25-2"><a href="database-creation-and-population.html#cb25-2" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="database-creation-and-population.html#cb25-3" tabindex="-1"></a><span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM camera_array</span></span>
+<span id="cb25-4"><a href="database-creation-and-population.html#cb25-4" tabindex="-1"></a><span class="st">                        LIMIT 5;&quot;</span>)</span></code></pre></div>
+<pre><code>##       array_name state years_surveyed        ecoregion array_lat array_long
+## 1         Galena    ID              1 Temperate Steppe     43.86    -114.65
+## 2         Hailey    ID              1 Temperate Steppe     43.56    -114.47
+## 3      SunValley    ID              1 Temperate Steppe     43.70    -114.22
+## 4 OregonStateUni    OR              5           Marine     44.42    -123.46
+## 5      Forrester    OR              2 Temperate Desert     45.29    -118.56</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="database-creation-and-population.html#cb27-1" tabindex="-1"></a><span class="co"># site_name table</span></span>
+<span id="cb27-2"><a href="database-creation-and-population.html#cb27-2" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="database-creation-and-population.html#cb27-3" tabindex="-1"></a><span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM site_name</span></span>
+<span id="cb27-4"><a href="database-creation-and-population.html#cb27-4" tabindex="-1"></a><span class="st">                        LIMIT 5;&quot;</span>)</span></code></pre></div>
+<pre><code>##                            site_id array_name development_level
+## 1 OR_Forest_Forrester_21_loc_01dup  Forrester              Wild
+## 2    OR_Forest_Forrester_21_loc_02  Forrester              Wild
+## 3    OR_Forest_Forrester_21_loc_03  Forrester              Wild
+## 4    OR_Forest_Forrester_21_loc_04  Forrester              Wild
+## 5    OR_Forest_Forrester_21_loc_05  Forrester              Wild</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="database-creation-and-population.html#cb29-1" tabindex="-1"></a><span class="co"># deployment table</span></span>
+<span id="cb29-2"><a href="database-creation-and-population.html#cb29-2" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="database-creation-and-population.html#cb29-3" tabindex="-1"></a><span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM deployment</span></span>
+<span id="cb29-4"><a href="database-creation-and-population.html#cb29-4" tabindex="-1"></a><span class="st">                        LIMIT 5;&quot;</span>)</span></code></pre></div>
+<pre><code>##                   deployment_id                          site_id
+## 1 OR_Forest_Forrester_21_dep_01 OR_Forest_Forrester_21_loc_01dup
+## 2 OR_Forest_Forrester_21_dep_02    OR_Forest_Forrester_21_loc_02
+## 3 OR_Forest_Forrester_21_dep_03    OR_Forest_Forrester_21_loc_03
+## 4 OR_Forest_Forrester_21_dep_04    OR_Forest_Forrester_21_loc_04
+## 5 OR_Forest_Forrester_21_dep_05    OR_Forest_Forrester_21_loc_05
+##          project_id start_date   end_date survey_nights latitude longitude
+## 1 Snapshot USA 2021   9/1/2021 11/24/2021            84 45.30501 -118.6071
+## 2 Snapshot USA 2021   9/1/2021 11/24/2021            84 45.30404 -118.5949
+## 3 Snapshot USA 2021   9/1/2021  11/5/2021            65 45.30509 -118.5822
+## 4 Snapshot USA 2021   9/1/2021  11/5/2021            65 45.30507 -118.5695
+## 5 Snapshot USA 2021   9/1/2021 10/28/2021            57 45.30468 -118.5566
+##   habitat feature_type
+## 1  Forest   Trail game
+## 2  Forest   Trail game
+## 3  Forest   Trail game
+## 4  Forest   Trail game
+## 5  Forest    Road dirt</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="database-creation-and-population.html#cb31-1" tabindex="-1"></a><span class="co"># sequence table</span></span>
+<span id="cb31-2"><a href="database-creation-and-population.html#cb31-2" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="database-creation-and-population.html#cb31-3" tabindex="-1"></a><span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM sequence</span></span>
+<span id="cb31-4"><a href="database-creation-and-population.html#cb31-4" tabindex="-1"></a><span class="st">                        LIMIT 5;&quot;</span>)</span></code></pre></div>
+<pre><code>##   sequence_id        deployment_id      start_time        end_time
+## 1    sewa0001 SEWA_N01_DSPSS1_SP22 9/12/2022 17:57 9/12/2022 17:59
+## 2    sewa0002 SEWA_N01_DSPSS1_SP22  9/14/2022 7:59  9/14/2022 8:01
+## 3    sewa0003 SEWA_N01_DSPSS1_SP22  9/14/2022 8:02  9/14/2022 8:02
+## 4    sewa0004 SEWA_N01_DSPSS1_SP22  9/15/2022 5:17  9/15/2022 5:17
+## 5    sewa0005 SEWA_N01_DSPSS1_SP22  9/16/2022 1:32  9/16/2022 1:33</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="database-creation-and-population.html#cb33-1" tabindex="-1"></a><span class="co"># detection table</span></span>
+<span id="cb33-2"><a href="database-creation-and-population.html#cb33-2" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="database-creation-and-population.html#cb33-3" tabindex="-1"></a><span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM detection</span></span>
+<span id="cb33-4"><a href="database-creation-and-population.html#cb33-4" tabindex="-1"></a><span class="st">                        LIMIT 5;&quot;</span>)</span></code></pre></div>
+<pre><code>##   detection_id sequence_id    class    order    family genus species
+## 1      cd00001     7446823 Mammalia Primates Hominidae  Homo sapiens
+## 2      cd00002     7446946 Mammalia Primates Hominidae  Homo sapiens
+## 3      cd00003     7447030 Mammalia Primates Hominidae  Homo sapiens
+## 4      cd00004     7447116 Mammalia Primates Hominidae  Homo sapiens
+## 5      cd00005     7447141 Mammalia Primates Hominidae  Homo sapiens
+##            common_name  age  sex group_number
+## 1 Human-Camera Trapper &lt;NA&gt; &lt;NA&gt;            1
+## 2 Human-Camera Trapper &lt;NA&gt; &lt;NA&gt;            1
+## 3                Human &lt;NA&gt; &lt;NA&gt;            1
+## 4                Human &lt;NA&gt; &lt;NA&gt;            1
+## 5                Human &lt;NA&gt; &lt;NA&gt;            1</code></pre>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="data-exploration.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.pdf", "_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  },
+  "output_dir": "docs"
+});
+});
+</script>
+
+</body>
+
+</html>
