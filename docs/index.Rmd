@@ -5,19 +5,12 @@ date: "2025-12-08"
 site: bookdown::bookdown_site
 documentclass: book
 csl: the-journal-of-wildlife-management.csl
-bibliography: [references.bib, packages.bib]
+bibliography: references.bib
 url: https://rrobenstein.github.io/wildlife_presence_trail_cams/
 description: "This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures."
 link-citations: yes
 github-repo: rrobenstein.github.io/wildlife_presence_trail_cams
 ---
-
-```{r include=FALSE}
-# automatically create a bib database for R packages
-knitr::write_bib(c(
-  .packages(), 'bookdown', 'knitr', 'rmarkdown'
-), 'packages.bib')
-```
 
 ```{r opts, echo = FALSE, eval = TRUE}
 knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
@@ -79,3 +72,4 @@ sequences, and taxonomic information across various levels for species
 identification [@rooney2025b]. Further information regarding camera
 array locations and ecoregions were added for camera arrays
 [@rooney2024].
+
