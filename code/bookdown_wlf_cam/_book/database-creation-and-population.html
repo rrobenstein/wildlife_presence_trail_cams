@@ -450,10 +450,12 @@ column names correspond.</p>
 <span id="cb10-6"><a href="database-creation-and-population.html#cb10-6" tabindex="-1"></a><span class="co"># Get database field names </span></span>
 <span id="cb10-7"><a href="database-creation-and-population.html#cb10-7" tabindex="-1"></a><span class="fu">dbListFields</span>(wlf_cam_db, <span class="st">&quot;deployment&quot;</span>)</span></code></pre></div>
 <p>Before populating the table, note the discrepancy in names of variables.</p>
-<pre><code>##  [1] &quot;deployment_id&quot; &quot;site_id&quot;       &quot;project_id&quot;    &quot;lat&quot;           &quot;long&quot;         
-##  [6] &quot;start&quot;         &quot;end&quot;           &quot;survey_nights&quot; &quot;habitat&quot;       &quot;feature_type&quot;</code></pre>
-<pre><code>##  [1] &quot;deployment_id&quot; &quot;site_id&quot;       &quot;project_id&quot;    &quot;start_date&quot;    &quot;end_date&quot;     
-##  [6] &quot;survey_nights&quot; &quot;latitude&quot;      &quot;longitude&quot;     &quot;habitat&quot;       &quot;feature_type&quot;</code></pre>
+<pre><code>##  [1] &quot;deployment_id&quot; &quot;site_id&quot;       &quot;project_id&quot;    &quot;lat&quot;          
+##  [5] &quot;long&quot;          &quot;start&quot;         &quot;end&quot;           &quot;survey_nights&quot;
+##  [9] &quot;habitat&quot;       &quot;feature_type&quot;</code></pre>
+<pre><code>##  [1] &quot;deployment_id&quot; &quot;site_id&quot;       &quot;project_id&quot;    &quot;start_date&quot;   
+##  [5] &quot;end_date&quot;      &quot;survey_nights&quot; &quot;latitude&quot;      &quot;longitude&quot;    
+##  [9] &quot;habitat&quot;       &quot;feature_type&quot;</code></pre>
 <p>Edit the <code>.csv</code> column names to fit those of the database first.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="database-creation-and-population.html#cb13-1" tabindex="-1"></a><span class="co"># Edit .csv column names</span></span>
 <span id="cb13-2"><a href="database-creation-and-population.html#cb13-2" tabindex="-1"></a><span class="fu">colnames</span>(deployment_csv) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;deployment_id&quot;</span>, <span class="st">&quot;site_id&quot;</span>,</span>
@@ -464,8 +466,9 @@ column names correspond.</p>
 <span id="cb13-7"><a href="database-creation-and-population.html#cb13-7" tabindex="-1"></a></span>
 <span id="cb13-8"><a href="database-creation-and-population.html#cb13-8" tabindex="-1"></a><span class="co"># Check .csv column names again</span></span>
 <span id="cb13-9"><a href="database-creation-and-population.html#cb13-9" tabindex="-1"></a><span class="fu">colnames</span>(deployment_csv)</span></code></pre></div>
-<pre><code>##  [1] &quot;deployment_id&quot; &quot;site_id&quot;       &quot;project_id&quot;    &quot;latitude&quot;      &quot;longitude&quot;    
-##  [6] &quot;start_date&quot;    &quot;end_date&quot;      &quot;survey_nights&quot; &quot;habitat&quot;       &quot;feature_type&quot;</code></pre>
+<pre><code>##  [1] &quot;deployment_id&quot; &quot;site_id&quot;       &quot;project_id&quot;    &quot;latitude&quot;     
+##  [5] &quot;longitude&quot;     &quot;start_date&quot;    &quot;end_date&quot;      &quot;survey_nights&quot;
+##  [9] &quot;habitat&quot;       &quot;feature_type&quot;</code></pre>
 <p>Now that the column names match, populate the deployment table.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="database-creation-and-population.html#cb15-1" tabindex="-1"></a><span class="co"># Append .csv into SQLite table</span></span>
 <span id="cb15-2"><a href="database-creation-and-population.html#cb15-2" tabindex="-1"></a><span class="fu">dbWriteTable</span>(<span class="at">conn =</span> wlf_cam_db,</span>
@@ -627,18 +630,24 @@ properly.</p>
 <span id="cb29-2"><a href="database-creation-and-population.html#cb29-2" tabindex="-1"></a></span>
 <span id="cb29-3"><a href="database-creation-and-population.html#cb29-3" tabindex="-1"></a><span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM deployment</span></span>
 <span id="cb29-4"><a href="database-creation-and-population.html#cb29-4" tabindex="-1"></a><span class="st">                        LIMIT 5;&quot;</span>)</span></code></pre></div>
-<pre><code>##                   deployment_id                          site_id        project_id
-## 1 OR_Forest_Forrester_21_dep_01 OR_Forest_Forrester_21_loc_01dup Snapshot USA 2021
-## 2 OR_Forest_Forrester_21_dep_02    OR_Forest_Forrester_21_loc_02 Snapshot USA 2021
-## 3 OR_Forest_Forrester_21_dep_03    OR_Forest_Forrester_21_loc_03 Snapshot USA 2021
-## 4 OR_Forest_Forrester_21_dep_04    OR_Forest_Forrester_21_loc_04 Snapshot USA 2021
-## 5 OR_Forest_Forrester_21_dep_05    OR_Forest_Forrester_21_loc_05 Snapshot USA 2021
-##   start_date   end_date survey_nights latitude longitude habitat feature_type
-## 1   9/1/2021 11/24/2021            84 45.30501 -118.6071  Forest   Trail game
-## 2   9/1/2021 11/24/2021            84 45.30404 -118.5949  Forest   Trail game
-## 3   9/1/2021  11/5/2021            65 45.30509 -118.5822  Forest   Trail game
-## 4   9/1/2021  11/5/2021            65 45.30507 -118.5695  Forest   Trail game
-## 5   9/1/2021 10/28/2021            57 45.30468 -118.5566  Forest    Road dirt</code></pre>
+<pre><code>##                   deployment_id                          site_id
+## 1 OR_Forest_Forrester_21_dep_01 OR_Forest_Forrester_21_loc_01dup
+## 2 OR_Forest_Forrester_21_dep_02    OR_Forest_Forrester_21_loc_02
+## 3 OR_Forest_Forrester_21_dep_03    OR_Forest_Forrester_21_loc_03
+## 4 OR_Forest_Forrester_21_dep_04    OR_Forest_Forrester_21_loc_04
+## 5 OR_Forest_Forrester_21_dep_05    OR_Forest_Forrester_21_loc_05
+##          project_id start_date   end_date survey_nights latitude longitude
+## 1 Snapshot USA 2021   9/1/2021 11/24/2021            84 45.30501 -118.6071
+## 2 Snapshot USA 2021   9/1/2021 11/24/2021            84 45.30404 -118.5949
+## 3 Snapshot USA 2021   9/1/2021  11/5/2021            65 45.30509 -118.5822
+## 4 Snapshot USA 2021   9/1/2021  11/5/2021            65 45.30507 -118.5695
+## 5 Snapshot USA 2021   9/1/2021 10/28/2021            57 45.30468 -118.5566
+##   habitat feature_type
+## 1  Forest   Trail game
+## 2  Forest   Trail game
+## 3  Forest   Trail game
+## 4  Forest   Trail game
+## 5  Forest    Road dirt</code></pre>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="database-creation-and-population.html#cb31-1" tabindex="-1"></a><span class="co"># sequence table</span></span>
 <span id="cb31-2"><a href="database-creation-and-population.html#cb31-2" tabindex="-1"></a></span>
 <span id="cb31-3"><a href="database-creation-and-population.html#cb31-3" tabindex="-1"></a><span class="fu">dbGetQuery</span>(wlf_cam_db, <span class="st">&quot;SELECT * FROM sequence</span></span>
