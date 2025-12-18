@@ -1,0 +1,88 @@
+--- 
+title: "Wildlife Presence Using Trail Cameras"
+author: "Riley Robenstein"
+date: "2025-12-08"
+site: bookdown::bookdown_site
+documentclass: book
+csl: the-journal-of-wildlife-management.csl
+bibliography: [references.bib, packages.bib]
+url: https://rrobenstein.github.io/wildlife_presence_trail_cams/
+description: "This project utilizes trail camera footage obtained from 2019-2023 in Idaho, Oregon, and Washington for Snapshot USA. The goal is to become familiar with assessing wildlife presence using trail camera data. Methods used here will help with assessing wildlife data (i.e., trail camera, acoustic recording, point count survey) for my research regarding deadwood quantification using LiDAR and wildlife presence and activity near deadwood structures."
+link-citations: yes
+github-repo: rrobenstein.github.io/wildlife_presence_trail_cams
+---
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
+
+
+```{r opts, echo = FALSE, eval = TRUE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
+```
+
+
+# Remote sensing and wildlife
+
+Use of remote sensing in wildlife research has become increasingly
+prevalent, particularly with trail cameras. Trail cameras can provide
+information about wildlife presence and absence when human observations
+are unavailable or may disturb wildlife activity and presence. Continued
+collection of data with trail cameras can provide spatial and temporal
+trends of larger wildlife. The SNAPSHOT USA project contains several
+years of camera trap data across the US available for public use
+[@rooney2025b]. Data were collected using un-baited cameras and
+identified through [Wildlife
+Insights](https://app.wildlifeinsights.org/initiatives/2000156/Snapshot-USA).
+The objective of this project is to become familiar with trail camera
+data to assess wildlife presence and activity. This will ultimately help
+in future data collection using trail cameras and acoustic recording
+units deployed and point count surveys conducted in the University of
+Idaho Experimental Forest to assess how deadwood structures may
+influence wildlife presence and activity. This file assists in building
+a database and cleaning and visualizing trail camera data.
+
+## SNAPSHOT USA
+
+SNAPSHOT USA is a national project where camera trap surveys are
+conducted across all 50 US states annually from September-October to
+estimate wildlife abundance and distributions [@rooney2025a]. This
+project primarily focuses on mammalian species, with large birds also
+included. SNAPSHOT USA's protocol provides a solid base for community
+science, and various organizations across the country collaborate to
+produce these spatial and temporal wildlife data. Some contributors have
+provided data outside the standard collection period, so the 2019-2023
+data span from August 1-December 29 [@rooney2025a]. Each collaborator is
+required to deploy a camera array made up of a minimum of eight
+un-baited cameras. The SNAPSHOT USA protocol requires at least 400
+camera trap-nights between September and October per year for each
+camera array [@rooney2025a].
+
+## Study area
+
+My focal area included a total of 15 trail camera sites in Idaho,
+Washington, and Oregon (Figure 1).
+
+![Figure 1. Camera array locations and Bailey's ecoregions of the US
+from 2019-2023 [@rooney2024]. Darker points represent locations that fall within
+Idaho, Washington and Oregon and size correlates to the number of years
+surveyed. Colored polygons represent different
+ecoregions.](../../documents/study_area.jpg)
+
+## Data description
+
+I subsetted these data to only include cameras deployed in Idaho,
+Washington and Oregon. Data consisted of camera arrays, camera
+locations, general habitat characteristics, deployment periods, image
+sequences, and taxonomic information across various levels for species
+identification [@rooney2025b]. Further information regarding camera
+array locations and ecoregions were added for camera arrays
+[@rooney2024].
+
+## References
+
+::: {#refs}
+:::

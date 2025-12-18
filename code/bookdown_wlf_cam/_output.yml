@@ -1,0 +1,13 @@
+bookdown::gitbook:
+  css: open_sans.css
+  config:
+    output_dir: "docs"
+    edit: https://rrobenstein.github.io/wildlife_presence_trail_cams/
+    download: ["pdf", "epub"]
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: yes
+bookdown::epub_book: default

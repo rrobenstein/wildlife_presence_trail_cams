@@ -1,0 +1,290 @@
+# Data exploration
+
+Now that the database is created and loaded, we can explore and
+familiarize ourselves with trail camera data.
+
+## Load package, database and tables
+
+Load the `tidyverse` package to help with data exploration, along with the previous packages. Load the database and
+tables and assign them each to an object.
+
+```{r tidyverse_db_tables, message = FALSE}
+library(DBI)
+library(RSQLite)
+library(tidyverse)
+
+wlf_cam_db <- dbConnect(drv = RSQLite::SQLite(),
+                       "../../database/wlf_cam.db")
+
+project <- dbGetQuery(wlf_cam_db, "SELECT * FROM project_name;")
+array <- dbGetQuery(wlf_cam_db, "SELECT * FROM camera_array;")
+site <- dbGetQuery(wlf_cam_db, "SELECT * FROM site_name;")
+deployment <- dbGetQuery(wlf_cam_db, "SELECT * FROM deployment;")
+sequence <- dbGetQuery(wlf_cam_db, "SELECT * FROM sequence;")
+detection <- dbGetQuery(wlf_cam_db, "SELECT * FROM detection;")
+```
+
+## Exploratory summaries
+
+Before diving into wildlife presence/absence and population trends,
+explore the following summary information about the trail cameras below.
+
+### Deployments per year
+
+We want to know how many cameras were deployed each year.
+
+```{r deploy_per_yr, message = FALSE}
+n_cam <- deployment %>% 
+  mutate(year = year(mdy(start_date))) %>% # acquire year from deployment date
+  group_by(year) %>% # group deployments by year
+  tally # calculate number of cameras deployed per year
+
+n_cam
+```
+
+### Arrays with > 8 cameras
+
+We want to know how many camera arrays had more than eight cameras
+deployed per survey period.
+
+Note that there is no foreign key directly connecting the array and
+deployment tables. We will need the site table to connect these these
+two tables.
+
+```{r array_eight_cam, message = FALSE}
+n_array <- array %>% 
+  left_join(site, by = "array_name") %>% # join site table to array using array_name
+  left_join(deployment, by = "site_id") %>% # join deployment table to array using site_id
+  mutate(year = year(mdy(start_date)), # acquire year from deployment date
+         array_year = paste0(array_name, "_", year)) %>% # create new variable with array name and year
+  group_by(array_year) %>% 
+  tally %>%  # calculate number of cameras per array per year
+  filter(n > 8) %>% # include arrays with more than 8 cameras
+  tally # calculate number of arrays with > 8 cameras deployed in a survey period
+
+n_array
+```
+
+We can see that 25 camera array deployments had more than eight cameras.
+
+### Sites reused
+
+We want to know how many and which sites were reused.
+
+```{r sites_reused, message = FALSE}
+reused <- site %>% 
+  left_join(deployment, by = "site_id") %>% # join deployment table to site using site_id
+  group_by(site_id) %>% # group by site
+  tally %>% # calculate number of times each site is used
+  filter(n > 1) # include sites with more than one deployment
+
+n_reused <- tally(reused) # calculate number of sites reused
+
+reused
+n_reused
+```
+
+We can see that 40 sites were reused between 2019-2023 in Idaho,
+Washington and Oregon.
+
+## Number of species
+
+Now, let's look at the species level.
+
+### By habitat
+
+We want to know how many species were detected in each habitat type.
+Similar to before, we will need to bring in a third
+table---sequence---to relate the detection and deployment tables.
+
+```{r n_species_habitat, message = FALSE}
+# filter out NA values for species
+sp_detect <- detection[!is.na(detection$species), ]
+
+n_sp_habitat <- sp_detect[sp_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  left_join(deployment, by = "deployment_id") %>% # join deployment table to detection using deployment_id
+  mutate(genus_species = paste0(genus, " ", species)) %>% # create new variable with genus and species
+  select(genus_species, habitat) %>%  # select variables genus_species and habitat
+  group_by(habitat) %>% # group by habitat
+  tally
+
+n_sp_habitat
+```
+
+### By feature type
+
+We want to know how many species were detected near each feature type.
+Like the previous query, we will need the sequence table to relate the
+detection and deployment tables.
+
+```{r n_species_feature, message = FALSE}
+# filter out NA values for species
+sp_detect <- detection[!is.na(detection$species), ]
+
+n_sp_feature <- sp_detect[sp_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  left_join(deployment, by = "deployment_id") %>% # join deployment table to detection using deployment_id
+  mutate(genus_species = paste0(genus, " ", species)) %>% # create new variable with genus and species
+  select(genus_species, feature_type) %>%  # select variables genus_species and feature_type
+  group_by(feature_type) %>% # group by feature_type
+  tally
+
+n_sp_feature
+```
+
+### By habitat and feature type
+
+We want to know how many species were detected in each habitat type near
+each feature type.
+
+```{r n_species_habitat_feature, message = FALSE}
+# filter out NA values for species
+sp_detect <- detection[!is.na(detection$species), ]
+
+n_species <- sp_detect[sp_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  left_join(deployment, by = "deployment_id") %>% # join deployment table to detection using deployment_id
+  mutate(genus_species = paste0(genus, " ", species)) %>% # create new variable with genus and species
+  select(genus_species, habitat, feature_type) %>%  # select variables genus_species, habitat, and feature_type
+  group_by(habitat, feature_type) %>% # group by habitat, then feature_type
+  tally
+
+n_species
+```
+
+## Number of detections
+
+Let's look at the individual level for wildlife detections.
+
+### By year
+
+We want to know how many individuals---known and unknown---were detected
+each year.
+
+```{r detect_year, message = FALSE}
+wlf_detect <- detection
+wlf_detect$species[is.na(wlf_detect$species)] <- "unknown" # convert NA values to "unknown"
+
+n_detect_yr <- wlf_detect[wlf_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(year = year(mdy_hm(start_time))) %>% # acquire year from start sequence
+  select(group_number, year) %>%  # select variables group_number and year
+  group_by(year) %>% # group by year
+  summarise(n = sum(group_number))
+
+n_detect_yr
+```
+
+We want to know how many known individuals were detected each year.
+
+```{r known_detect_year, message = FALSE}
+known_detect <- detection[!is.na(detection$species), ] # filter out unknown (NA) detections
+
+n_known_yr <- known_detect[known_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(year = year(mdy_hm(start_time))) %>% # acquire year from start sequence
+  select(group_number, year) %>%  # select variables group_number and year
+  group_by(year) %>% # group by year
+  summarise(n = sum(group_number))
+
+n_known_yr
+```
+
+### By month
+
+We want to know how many individuals---known and unknown---were detected
+each month to assess at a more seasonal level.
+
+```{r detect_month, message = FALSE}
+wlf_detect <- detection
+wlf_detect$species[is.na(wlf_detect$species)] <- "unknown" # convert NA values to "unknown"
+
+n_detect_m <- wlf_detect[wlf_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(month = month(mdy_hm(start_time))) %>% # acquire month from start sequence
+  select(group_number, month) %>%  # select variables group_number and year
+  group_by(month) %>% # group by year
+  summarise(n = sum(group_number))
+
+n_detect_m
+```
+
+We want to know how many known individuals were detected each year.
+
+```{r known_detect_month, message = FALSE}
+known_detect <- detection[!is.na(detection$species), ] # filter out unknown (NA) detections
+
+n_known_m <- known_detect[known_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(month = month(mdy_hm(start_time))) %>% # acquire month from start sequence
+  select(group_number, month) %>%  # select variables group_number and month
+  group_by(month) %>% # group by month
+  summarise(n = sum(group_number))
+
+n_known_m
+```
+
+### By site
+
+We want to know which sites had the highest number of known individuals
+detected. Let's focus on the top five sites. Note that we need to bring
+in the deployment and sequence tables to relate the site and detection
+tables.
+
+```{r detect_site, message = FALSE}
+known_detect <- detection[!is.na(detection$species), ] # filter out unknown (NA) detections
+
+known_detect <- known_detect[known_detect$species != "sapiens", ] # filter out human detections
+
+n_detect_site <- site %>% 
+  left_join(deployment, by = "site_id") %>% # join deployment table to site using site_id
+  left_join(sequence, by = "deployment_id") %>% # join sequence table to site using deployment_id
+  left_join(known_detect, by = "sequence_id") %>%  # join detection table to site using sequence_id
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  select(group_number, site_id) %>%  # select variables group_number and month
+  group_by(site_id) %>% # group by month
+  summarise(n = sum(group_number, na.rm = TRUE)) %>% # calculate number of individuals detected per site
+  arrange(desc(n)) # arrange in descending order of individuals detected
+
+head(n_detect_site, 5) # display the 5 sites with highest number of detections
+```
+
+### By site and month
+
+We want to know which sites had the highest number of known individuals
+detected in September and October. Again, let's focus on the top five
+sites. We need to bring in the deployment table to relate the
+detection-sequence and site tables.
+
+```{r detect_site_month, message = FALSE}
+known_detect <- detection[!is.na(detection$species), ] # filter out unknown (NA) detections
+
+known_detect <- known_detect[known_detect$species != "sapiens", ] # filter out human detections
+
+n_detect <- site %>% 
+  left_join(deployment, by = "site_id") %>% # join deployment table to site table using site_id
+  left_join(sequence, by = "deployment_id") %>% # join sequence table to site using deployment_id
+  left_join(known_detect, by = "sequence_id") %>%  # join detection table to site using sequence_id
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  mutate(month = month(mdy_hm(start_time))) %>% # acquire month from start sequence
+  filter(month %in% c(9, 10)) %>% # only include detections from Sept and Oct
+  select(group_number, month, site_id) %>% # select variables group_number, month, and site_id
+  group_by(site_id, month) %>% # group by site_id, then by month
+  summarise(n = sum(group_number, na.rm = TRUE)) # calculate number of individuals detected per site per month
+
+Sept <- n_detect[n_detect$month == 9, ] %>% 
+  arrange(desc(n)) # arrange in descending order of individuals detected
+Oct <- n_detect[n_detect$month == 10, ] %>% 
+  arrange(desc(n)) # arrange in descending order of individuals detected
+
+head(Sept, 5)
+head(Oct, 5)
+```

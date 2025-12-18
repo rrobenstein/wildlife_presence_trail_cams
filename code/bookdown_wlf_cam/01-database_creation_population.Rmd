@@ -1,0 +1,438 @@
+# Database creation and population
+
+Trail camera data were distributed across six `.csv` files in the
+**processed_data** folder to optimize storage and data manipulation. I
+created a relational database with R and SQL to easily navigate these
+data (Figure 2). Note that the header of each box corresponds to the name of each table. The database can be reproduced with the code in sections **2.1-2.8**.
+
+![Figure 2. Entity relationship diagram of relational database
+structure.](../../documents/db_structure_ssusa.jpg)
+
+## Load packages and create and connect to database
+
+Load the packages `DBI` and `RSQLite` required to connect R and SQLite.
+Use `install.packages()` if the packages are not installed.
+
+```{r pkgs, message = FALSE}
+library(DBI)
+library(RSQLite)
+```
+
+Connect to the database file. A database file will be created if the
+code has not previously been executed.
+
+```{r db}
+wlf_cam_db <- dbConnect(drv = RSQLite::SQLite(),
+                       "../../database/wlf_cam.db")
+```
+
+## **PROJECT_NAME** table {#project}
+
+The **project_name** table includes the following variables: project_id
+(**primary key**), project_name, and year, where project_id is a unique
+identifier for each unique project by year, project name is the
+respective project name, and year is the year data were captured.
+
+### Create **project_name** table
+
+Create the table in SQLite.
+
+```{r project_name_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE project_name (
+          project_id varchar(10) PRIMARY KEY NOT NULL UNIQUE,
+          project_name varchar(35),
+          year numeric(4) CHECK (year IN 
+                                          ('2019',
+                                          '2020',
+                                          '2021',
+                                          '2022',
+                                          '2023'))
+          );")
+```
+
+### Populate **project_name** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_project_names, eval = FALSE}
+# Read in project_name.csv file
+project_name_csv <- read.csv("../../processed_data/project_name.csv")
+
+# Get .csv column names
+colnames(project_name_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "project_name")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "project_name",
+             value = project_name_csv,
+             append = TRUE)
+```
+
+## **CAMERA_ARRAY** table {#array}
+
+The **camera_array** table includes the following variables: array_name
+(**primary key**), state, years_surveyed, ecoregion, array_lat, and
+array_long, where array_name is a unique identifier for each camera trap
+array, state is the US state where the array was located, years_surveyed
+is the number of years an array has image sequence data from, ecoregion
+is based on Bailey's ecoregions (Bailey 2016 as cited in Rooney et al.
+2025) and array_lat and array_long are the approximate latitude and
+longitude coordinates (decimal degrees WGS 84) for the respective array
+array.
+
+### Create **camera_array** table
+
+Create the table in SQLite.
+
+```{r camera_array_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE camera_array (
+          array_name varchar(20) PRIMARY KEY NOT NULL UNIQUE,
+          state varchar(2),
+          years_surveyed numeric(1),
+          ecoregion varchar(20),
+          array_lat numeric(10, 10),
+          array_long numeric(10, 10)
+          );")
+```
+
+### Populate **camera_array** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_camera_array, eval = FALSE}
+# Read in camera_array.csv file
+camera_array_csv <- read.csv("../../processed_data/camera_array.csv")
+
+# Get .csv column names
+colnames(camera_array_csv)
+# Get database field names
+dbListFields(wlf_cam_db, "camera_array")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "camera_array",
+             value = camera_array_csv,
+             append = TRUE)
+```
+
+## **SITE_NAME** table {#site}
+
+The **site_name** table includes the following variables: site_id
+(**primary key**), array_name (*foreign key*), and development_level,
+where site_id is a unique identifier for each site, array_name
+corresponds to the array_name in [camera_array](#array), and
+development_level is classified as wild, rural, suburban, or urban.
+
+### Create **site_name** table
+
+Create the table in SQLite.
+
+```{r site_name_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE site_name (
+          site_id varchar(50) PRIMARY KEY NOT NULL UNIQUE,
+          array_name  varchar(50),
+          development_level varchar(10) CHECK (development_level IN 
+                                                                ('Wild',
+                                                                'Rural',
+                                                                'Urban',
+                                                                'Suburban')),
+          FOREIGN KEY (array_name) REFERENCES camera_array(array_name)
+          );")
+```
+
+### Populate **site_name** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_site_name, eval = FALSE}
+# Read in site_name.csv file
+site_name_csv <- read.csv("../../processed_data/site_name.csv")
+
+# Get .csv column names
+colnames(site_name_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "site_name")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "site_name",
+             value = site_name_csv,
+             append = TRUE)
+```
+
+## **DEPLOYMENT** table {#deployment}
+
+The **deployment** table includes the following variables: deployment_id
+(**primary key**), site_id (*foreign key*), project_id (*foreign key*).
+start_date, end_date, survey_nights, latitude, longitude, habitat, and
+feature type, where deployment_id is a unique identifier for each camera
+deployment, site_id corresponds to the site_id in [site_name](#site),
+project_id corresponds to the project_id in [project_name](#project),
+start_date is the date (*YYYY-MM-DD*) when the camera was deployed,
+end_date is the date (*YYYY-MM-DD*) when the camera was retrieved,
+survey_nights is number of nights the camera was at the site, latitude
+and longitude are geographic coordinates (decimal degrees WGS 84)
+between 21.3558 to 59.4526 and -157.7496 to -68.6116, respectively,
+habitat is classified as forest, grassland, or anthropogenic, and
+feature type indicates potential features at the camera's deployment
+site.
+
+### Create **deployment** table
+
+Create the table in SQLite.
+
+```{r deployment_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE deployment (
+          deployment_id varchar(60) PRIMARY KEY NOT NULL UNIQUE,
+          site_id varchar(50),
+          project_id varchar(10),
+          start_date text,
+          end_date text,
+          survey_nights numeric (3),
+          latitude numeric(10, 10),
+          longitude numeric(10, 10),
+          habitat varchar(15),
+          feature_type varchar(15),
+          FOREIGN KEY (site_id) REFERENCES site_name(site_id)
+          FOREIGN KEY (project_id) REFERENCES project_name(project_id)
+          );")
+```
+
+### Populate **deployment** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r col_names_deployment, eval = FALSE}
+# Read in deployment.csv file
+deployment_csv <- read.csv("../../processed_data/deployment.csv")
+
+# Get .csv column names
+colnames(deployment_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "deployment")
+```
+
+Before populating the table, note the discrepancy in names of variables.
+
+```{r show_names_deployment, echo = FALSE}
+wlf_cam_db <- dbConnect(drv = SQLite(),
+                       "../../database/wlf_cam.db")
+deployment_csv <- read.csv("../../processed_data/deployment.csv")
+
+# Get .csv column names
+colnames(deployment_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "deployment")
+```
+
+Edit the `.csv` column names to fit those of the database first.
+
+```{r edit_variables_deployment}
+# Edit .csv column names
+colnames(deployment_csv) <- c("deployment_id", "site_id",
+                              "project_id", "latitude",
+                              "longitude", "start_date",
+                              "end_date", "survey_nights",
+                              "habitat", "feature_type")
+
+# Check .csv column names again
+colnames(deployment_csv)
+```
+
+Now that the column names match, populate the deployment table.
+
+```{r populate_deployment, eval = FALSE}
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "deployment",
+             value = deployment_csv,
+             append = TRUE)
+```
+
+## **SEQUENCE** table {#sequence}
+
+The **sequence** table includes the following variables: sequence_id
+(**primary key**), deployment_id (*foreign key*), start_time, and
+end_time, where sequence_id is a unique identifier for each photo
+sequence captured within one minute of a camera trigger, deployment_id
+corresponds to the deployment_id in [deployment](#deployment),
+start_time is the beginning of the one-minute photo sequence, and
+end_time is the end of the one-minute photo sequence.
+
+### Create **sequence** table
+
+Create the table in SQLite.
+
+```{r sequence_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE sequence (
+          sequence_id varchar(15) PRIMARY KEY NOT NULL UNIQUE,
+          deployment_id varchar(60),
+          start_time text,
+          end_time text,
+          FOREIGN KEY (deployment_id) REFERENCES deployment(deployment_id)
+          );")
+```
+
+### Populate **sequence** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_sequence, eval = FALSE}
+# Read in sequence.csv file
+sequence_csv <- read.csv("../../processed_data/sequence.csv")
+
+# Get .csv column names
+colnames(sequence_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "sequence")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "sequence",
+             value = sequence_csv,
+             append = TRUE)
+```
+
+## **DETECTION** table
+
+The **detection** table includes the following variables: detection_id
+(**primary key**), sequence_id (*foreign key*), class, order, family,
+genus, species, common_name, age, sex, and group_number, where
+detection_id is a unique identifier for each wildlife detection,
+sequence_id corresponds to the sequence_id in [sequence](#sequence),
+class is the taxonomic class identified for the wildlife detection,
+order is the taxonomic order identified for the wildlife detection,
+family is the taxonomic family identified for the wildlife detection,
+genus is the taxonomic genus identified for the wildlife detection,
+species is the taxonomic species identified for the wildlife detection,
+common_name is the common name identified for the wildlife detection,
+age is classified as juvenile or adult, sex is classified as male or
+female, and group_number is the number of individuals in the image
+sequence with that respective taxonomic identification.
+
+### Create **detection** table
+
+Create the table in SQLite.
+
+```{r detection_table, eval = FALSE}
+dbExecute(conn = wlf_cam_db,
+          statement = "CREATE TABLE detection (
+          detection_id varchar(15) PRIMARY KEY NOT NULL UNIQUE,
+          sequence_id varchar(15),
+          class varchar(15),
+          'order' varchar(20),
+          family varchar(20),
+          genus varchar (15),
+          species varchar(15),
+          common_name varchar(30),
+          age varchar(10),
+          sex varchar(10),
+          group_number numeric(2),
+          FOREIGN KEY (sequence_id) REFERENCES sequence(sequence_id)
+          );")
+```
+
+### Clean **detection** table
+
+The detection `.csv` file has missing values and formatting is
+inconsistent. To ensure they are compatible with `SQLite` and `R`, load
+the `.csv` file and convert all missing values to 'NA'. Make formatting
+consistent for the variables *age* and *sex*.
+
+```{r convert_null_detection, eval = FALSE}
+# Read in detection.csv file
+detection_csv <- read.csv("../../processed_data/detection.csv")
+
+# Convert ' ' or 'Unknown' values to blank ('')
+detection_csv[detection_csv == " " | detection_csv == "Unknown" | detection_csv == "unknown"] <- NA
+
+# Make formatting consistent
+detection_csv$age[detection_csv$age == "adult"] <- "Adult"
+detection_csv$age[detection_csv$age == "juvenile"] <- "Juvenile"
+
+detection_csv$sex[detection_csv$sex == "male"] <- "Male"
+detection_csv$sex[detection_csv$sex == "female"] <- "Female"
+```
+
+### Populate **detection** table
+
+Populate this database table with the `.csv` file after checking the
+column names correspond.
+
+```{r populate_detection, eval = FALSE}
+# Get .csv column names
+colnames(detection_csv)
+# Get database field names 
+dbListFields(wlf_cam_db, "detection")
+
+# Append .csv into SQLite table
+dbWriteTable(conn = wlf_cam_db,
+             name = "detection",
+             value = detection_csv,
+             append = TRUE)
+```
+
+## Check database
+
+Run the following code to ensure the data were loaded into the tables
+properly.
+
+```{r db_table_names}
+# List table names
+
+dbListTables(wlf_cam_db)
+```
+
+```{r project_name_table_check}
+# project_name table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM project_name
+                        LIMIT 5;")
+```
+
+```{r camera_array_table_check}
+# camera_array table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM camera_array
+                        LIMIT 5;")
+```
+
+```{r site_name table check}
+# site_name table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM site_name
+                        LIMIT 5;")
+```
+
+```{r deployment_table_check}
+# deployment table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM deployment
+                        LIMIT 5;")
+```
+
+```{r sequence_table_check}
+# sequence table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM sequence
+                        LIMIT 5;")
+```
+
+```{r detection_table_check}
+# detection table
+
+dbGetQuery(wlf_cam_db, "SELECT * FROM detection
+                        LIMIT 5;")
+```

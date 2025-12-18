@@ -1,0 +1,193 @@
+# Data visualization
+
+Begin visualizing trends seen in the camera trap data. First, connect to the database and load the tables and packages from before. We will also be using `ggplot2`.
+
+```{r pkgs_db_tables, message = FALSE}
+library(DBI)
+library(RSQLite)
+library(tidyverse)
+
+wlf_cam_db <- dbConnect(drv = RSQLite::SQLite(),
+                       "../../database/wlf_cam.db")
+
+project <- dbGetQuery(wlf_cam_db, "SELECT * FROM project_name;")
+array <- dbGetQuery(wlf_cam_db, "SELECT * FROM camera_array;")
+site <- dbGetQuery(wlf_cam_db, "SELECT * FROM site_name;")
+deployment <- dbGetQuery(wlf_cam_db, "SELECT * FROM deployment;")
+sequence <- dbGetQuery(wlf_cam_db, "SELECT * FROM sequence;")
+detection <- dbGetQuery(wlf_cam_db, "SELECT * FROM detection;")
+```
+
+To use the same color scheme shown, run `devtools::install_github("cdanielcadena/tanagR")` and load the package `tanagR`.
+
+```{r tanagR_pkg, message = FALSE}
+library(tanagR)
+```
+
+## Species in September and October
+
+We want to know the number of individuals in each species detected in September and October. There are many species observed throughout these data, so we will break down the detections as we go.
+
+```{r species_months, message = FALSE}
+# filter out NA values for species
+sp_detect <- detection[!is.na(detection$species), ]
+
+sp_month <- sp_detect[sp_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(genus_species = paste0(genus, " ", species), # create new variable with genus and species
+         month = month(mdy_hm(start_time), label = TRUE, abbr = FALSE)) %>% # acquire month from start sequence
+  filter(month %in% c("September", "October")) %>% # only include detections from Sept and Oct
+  group_by(month, common_name) %>% # group by month, then common_name
+  select(order, family, genus_species, group_number, common_name, month) # select variables genus_species, group_number, and habitat
+```
+
+### Species detected > 100 times
+Let's visualize this for species with more than 100 detections in September or October.
+
+```{r vis_100_detect_months, message = FALSE}
+mult_detect <- sp_month %>% 
+  group_by(month, common_name) %>% 
+  summarize(n_individuals = sum(group_number)) %>% # calculate number of individuals detected per species per month
+  filter(n_individuals > 100) # select species detected > 100 times
+
+ggplot(mult_detect, aes(x = common_name, y = n_individuals, fill = month)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Species detected", y = "Number of individuals", fill = "Month") +
+  scale_fill_tanagr(palette_name = "cyanerpes_cyaneus") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### Carnivora order detections
+
+Focusing on the order Carnivora, we want to visualize the number of individuals in each species detected in September and October.
+
+```{r vis_carnivora_months, message = FALSE}
+carnivora <- sp_month[sp_month$order == "Carnivora", ] %>% # select species in order Carnivora
+  group_by(month, common_name) %>% 
+  summarize(n_individuals = sum(group_number)) # calculate number of individuals detected per species per month
+
+ggplot(carnivora, aes(x = common_name, y = n_individuals, fill = month)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Species detected", y = "Number of individuals", fill = "Month") +
+  scale_fill_tanagr(palette_name = "ramphocelus_sanguinolentus") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+## Detections across orders
+
+Many detections were only identified to the order level. Rather than looking at the species level, we want to visualize the number of individuals in each order detected in September and October.
+
+```{r vis_order_months, message = FALSE}
+wlf_detect <- detection
+wlf_detect$species[is.na(wlf_detect$species)] <- "unknown" # convert NA values to "unknown"
+
+n_order <- wlf_detect[wlf_detect$species != "sapiens", ] %>% # filter out detections of humans
+  filter(!grepl("Domestic", common_name)) %>% # filter out domestic animals
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  mutate(month = month(mdy_hm(start_time), 
+                       label = TRUE, abbr = FALSE)) %>% # acquire month from start sequence
+  filter(month %in% c("September", "October"), # only include detections from Sept and Oct
+         !is.na(order)) %>% # remove NAs
+  group_by(month, order) %>% # group by month, then order 
+  summarise(n_individuals = sum(group_number))  # calculate number of individuals detected per order per month
+
+ggplot(n_order, aes(x = order, y = n_individuals, fill = month)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Order detected", y = "Number of individuals", fill = "Month") +
+  scale_fill_tanagr(palette_name = "tangara_chilensis") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+## Detections over time
+
+We want to visualize wildlife trends over time in a couple of ways. Let's break this down again to help understand the bigger picture.
+
+```{r detect_time, message = FALSE}
+detect_wlf <- detection
+detect_wlf$term[!grepl("Domestic", detect_wlf$common_name)] <- "wildlife"
+detect_wlf$term[detect_wlf$common_name != "sapiens"] <- "wildlife" 
+  # define non-human and non-domestic life as wildlife in new column 'term'
+
+detect_wlf$term[detect_wlf$species == "sapiens"] <- "human-domestic" 
+  # define humans as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Cat"] <- "human-domestic" 
+  # define domestic cats as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Cattle"] <- "human-domestic"
+  # define domestic cattle as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Dog"] <- "human-domestic" 
+  # define domestic dogs as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Horse"] <- "human-domestic" 
+  # define domestic horses as human or domestic life
+detect_wlf$term[detect_wlf$common_name == "Domestic Sheep"] <- "human-domestic" 
+  # define domestic sheep as human or domestic life
+
+detect_wlf <- detect_wlf[!is.na(detect_wlf$common_name), ] 
+  # remove wildlife undefined in the common_name
+
+sp_time <- detect_wlf %>% 
+  left_join(sequence, by = "sequence_id") %>% # join sequence table to detection using sequence_id
+  left_join(deployment, by = "deployment_id") %>% # join deployment table to detection using deployment_id
+  mutate(date = mdy(format(mdy_hm(start_time), "%m-%d-%Y")), # acquire date from start sequence
+         year = year(mdy_hm(start_time)), # acquire year from start sequence
+         julian_day = date) # begin building julian day
+
+year(sp_time$julian_day) <- 2000 # set year to be the same for all julian days
+```
+
+### Wildlife detections over time
+
+We want to visualize the number of individuals detected over time and compare across years.
+
+```{r wlf_time, message = FALSE}
+wlf_time <- sp_time[sp_time$term != "human-domestic", ] %>% 
+  group_by(year, julian_day) %>% # group by year, then julian day
+  summarise(n_individuals = sum(group_number)) # calculate number of individuals detected daily per year
+
+ggplot(wlf_time, aes(x = julian_day, 
+                     y = n_individuals, 
+                     color = as.factor(year))) +
+  geom_point() +
+  labs(x = "Time", y = "Number of individuals detected", color = "Year") +
+  scale_color_tanagr(palette_name = "tangara_chilensis") +
+  theme_classic()
+```
+
+### Wildlife and human-domestic detections over time
+
+We want to visualize the number of individuals detected over time, along with the number of humans and domestic animals. We will first look at the year level.
+
+```{r wlf_human_time, message = FALSE}
+wlf_human_time <- sp_time%>% 
+  group_by(date, term) %>% # group by date
+  summarise(n_individuals = sum(group_number)) # calculate number of individuals detected daily across years
+
+ggplot(wlf_human_time, aes(x = date, 
+                     y = n_individuals, 
+                     color = term)) +
+  geom_point() +
+  labs(x = "Time", y = "Number of individuals detected", color = "Detection type") +
+  scale_color_tanagr(palette_name = "tangara_chilensis") +
+  theme_classic()
+```
+
+Now, let's look at a monthly level.
+
+```{r wlf_human_julian, message = FALSE}
+wlf_human_julian <- sp_time%>% 
+  group_by(year, julian_day, term) %>% # group by year, then julian day, then term
+  summarise(n_individuals = sum(group_number)) # calculate number of individuals detected daily per year
+
+ggplot(wlf_human_julian, aes(x = julian_day, 
+                     y = n_individuals, 
+                     color = term)) +
+  geom_point() +
+  labs(x = "Time", y = "Number of individuals detected", color = "Detection type") +
+  scale_color_tanagr(palette_name = "tangara_chilensis") +
+  theme_classic()
+```
+
+Surprisingly, wildlife detections do not appear to decrease as human and domestic animal detections increase.
